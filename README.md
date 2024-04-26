@@ -7,7 +7,7 @@
 
 ----
 
-Aurora is an open source system for managing CI&CD.
+Aurora is an open source system for DevOps.
 
 ----
 
