@@ -18,7 +18,7 @@ type Config struct {
 }
 
 type Server struct {
-	Port        int    `json:"port" yaml:"port" default:"8888"`
+	Port        int    `json:"port" yaml:"port" default:"80"`
 	Prefix      string `json:"prefix" yaml:"prefix" default:"/api/v1"`
 	Debug       bool   `json:"debug" yaml:"debug" default:"false"`
 	GracePeriod int    `json:"gracePeriod" yaml:"gracePeriod" default:"30"`

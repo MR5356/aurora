@@ -1,4 +1,4 @@
-module aurora
+module github.com/MR5356/aurora
 
 go 1.22
 

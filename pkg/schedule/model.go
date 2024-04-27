@@ -1,7 +1,7 @@
 package schedule
 
 import (
-	"aurora/pkg/middleware/database"
+	"github.com/MR5356/aurora/pkg/middleware/database"
 	"github.com/google/uuid"
 	"gorm.io/gorm"
 	"time"

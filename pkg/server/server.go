@@ -1,13 +1,13 @@
 package server
 
 import (
-	"aurora/docs"
-	"aurora/pkg/config"
-	"aurora/pkg/middleware/database"
-	"aurora/pkg/response"
 	"context"
 	"errors"
 	"fmt"
+	"github.com/MR5356/aurora/docs"
+	"github.com/MR5356/aurora/pkg/config"
+	"github.com/MR5356/aurora/pkg/middleware/database"
+	"github.com/MR5356/aurora/pkg/response"
 	"github.com/gin-gonic/gin"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"github.com/sirupsen/logrus"

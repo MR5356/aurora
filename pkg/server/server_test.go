@@ -1,8 +1,8 @@
 package server
 
 import (
-	"aurora/pkg/config"
 	"context"
+	"github.com/MR5356/aurora/pkg/config"
 	"testing"
 	"time"
 )

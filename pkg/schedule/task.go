@@ -1,9 +1,9 @@
 package schedule
 
 import (
-	"aurora/pkg/middleware/database"
-	"aurora/pkg/middleware/eventbus"
-	"aurora/pkg/util/structutil"
+	"github.com/MR5356/aurora/pkg/middleware/database"
+	"github.com/MR5356/aurora/pkg/middleware/eventbus"
+	"github.com/MR5356/aurora/pkg/util/structutil"
 	"github.com/sirupsen/logrus"
 )
 

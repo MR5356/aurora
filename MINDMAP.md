@@ -24,6 +24,7 @@ mindmap
                 pushplus
                 sms
                 etc.
+        Permission authentication
         SCM
         CI&CD
         monitoring alarm

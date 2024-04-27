@@ -1,5 +1,20 @@
+NAME ?= aurora
 OUT_DIR ?= _output
 BIN_DIR := $(OUT_DIR)/bin
+MODULE_NAME = github.com/MR5356/aurora
+
+VERSION ?= $(shell git describe --tags --abbrev=0 2>/dev/null)
+
+# if git describe error
+ifneq ($(VERSION),)
+  # VERSION has already been set
+else
+  BRANCH ?= $(shell git rev-parse --abbrev-ref HEAD 2>/dev/null)
+  COMMIT ?= $(shell git rev-parse --short HEAD 2>/dev/null)
+  VERSION = $(BRANCH)_$(COMMIT)
+endif
+
+GO_FLAGS ?= "-s -w -X '$(MODULE_NAME)/pkg/version.Version=$(VERSION)'"
 
 .DEFAULT_GOAL := help
 
@@ -11,6 +26,9 @@ help:  ## Show this help
 init:  ## Initialize the project
 	@go install github.com/swaggo/swag/cmd/swag@latest
 
+version:  ## Print the version
+	@echo $(VERSION)
+
 .PHONY: doc
 doc:  ## Generate documentation
 	swag init -d cmd/aurora -g aurora.go
@@ -19,6 +37,15 @@ doc:  ## Generate documentation
 .PHONY: deps
 deps: doc  ## Install dependencies
 	go get -d -v -t ./...
+
+.PHONY: build
+build: deps  ## Build the binary
+	go build -ldflags $(GO_FLAGS) -o $(BIN_DIR)/aurora ./cmd/aurora
+
+.PHONY: release
+release: clean deps  ## Build and release the binary
+	chmod +x hack/release.sh
+	./hack/release.sh $(NAME) $(GO_FLAGS) $(OUT_DIR)
 
 .PHONY: test
 test: deps  ## Run unit tests

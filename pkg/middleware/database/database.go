@@ -1,9 +1,9 @@
 package database
 
 import (
-	"aurora/pkg/config"
 	"encoding/json"
 	"errors"
+	"github.com/MR5356/aurora/pkg/config"
 	"github.com/avast/retry-go"
 	"github.com/glebarez/sqlite"
 	"github.com/sirupsen/logrus"

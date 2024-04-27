@@ -1,7 +1,7 @@
 package database
 
 import (
-	"aurora/pkg/util/structutil"
+	"github.com/MR5356/aurora/pkg/util/structutil"
 	"github.com/sirupsen/logrus"
 	"testing"
 )
