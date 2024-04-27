@@ -8,7 +8,7 @@ import (
 )
 
 type Schedule struct {
-	ID         uuid.UUID `json:"id" gorm:"primary_key;type:uuid;" swaggerignore:"true"`
+	ID         uuid.UUID `json:"id" gorm:"primary_key;type:uuid;" example:"00000000-0000-0000-0000-000000000000"`
 	Title      string    `json:"title" validate:"required"`
 	Desc       string    `json:"desc"`
 	CronString string    `json:"cronString" validate:"required" example:"*/5 * * * * *"`

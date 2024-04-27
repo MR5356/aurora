@@ -1,8 +1,11 @@
 package schedule
 
 import (
+	"github.com/MR5356/aurora/pkg/config"
 	"testing"
 )
+
+var _ = config.New(config.WithDatabase("sqlite", ":memory:"))
 
 func TestGetExecutorManager(t *testing.T) {
 	m := GetExecutorManager()

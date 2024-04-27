@@ -12,6 +12,7 @@ import (
 	"github.com/MR5356/aurora/pkg/middleware/database"
 	"github.com/MR5356/aurora/pkg/response"
 	"github.com/MR5356/aurora/pkg/server/ginmiddleware"
+	"github.com/MR5356/aurora/pkg/util/structutil"
 	"github.com/gin-gonic/gin"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"github.com/sirupsen/logrus"
@@ -33,6 +34,8 @@ type Server struct {
 var fs embed.FS
 
 func New(cfg *config.Config) (server *Server, err error) {
+	logrus.Infof("config: \n%+v", structutil.Struct2String(config.Current()))
+
 	// init log level
 	if cfg.Server.Debug {
 		gin.SetMode(gin.DebugMode)

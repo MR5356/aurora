@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"errors"
 	"github.com/MR5356/aurora/pkg/config"
+	"github.com/MR5356/aurora/pkg/util/funcutil"
 	"github.com/avast/retry-go"
 	"github.com/glebarez/sqlite"
 	"github.com/sirupsen/logrus"
@@ -28,6 +29,9 @@ var (
 )
 
 func GetDB() *Database {
+	if funcutil.IsCalledFromInit() {
+		logrus.Fatalf("GetDB should not be called from init")
+	}
 	once.Do(func() {
 		err := retry.Do(
 			func() (err error) {
@@ -52,7 +56,7 @@ func GetDB() *Database {
 func initDB() (database *Database, err error) {
 	cfg := config.Current()
 	var driver gorm.Dialector
-	logrus.Debugf("database driver: %s", cfg.Database.Driver)
+	logrus.Infof("database driver: %s, dsn: %s", cfg.Database.Driver, cfg.Database.DSN)
 	switch cfg.Database.Driver {
 	case "sqlite":
 		driver = sqlite.Open(cfg.Database.DSN)

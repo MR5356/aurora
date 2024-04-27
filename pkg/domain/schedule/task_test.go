@@ -1,9 +1,12 @@
 package schedule
 
 import (
+	"github.com/MR5356/aurora/pkg/config"
 	"github.com/google/uuid"
 	"testing"
 )
+
+var _ = config.New(config.WithDatabase("sqlite", ":memory:"))
 
 func TestNewWrapper(t *testing.T) {
 	task := &TestTask{}

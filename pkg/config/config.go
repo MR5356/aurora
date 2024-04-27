@@ -44,7 +44,7 @@ func New(cfgs ...Cfg) *Config {
 
 type Database struct {
 	Driver string `json:"driver" yaml:"driver" default:"sqlite"`
-	DSN    string `json:"dsn" yaml:"dsn" default:":memory:"`
+	DSN    string `json:"dsn" yaml:"dsn" default:"db.sqlite"`
 
 	MaxIdleConn int           `json:"maxIdleConn" yaml:"maxIdleConn" default:"10"`
 	MaxOpenConn int           `json:"maxOpenConn" yaml:"maxOpenConn" default:"40"`

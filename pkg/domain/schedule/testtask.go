@@ -1,7 +1,6 @@
 package schedule
 
 import (
-	"github.com/MR5356/aurora/pkg/middleware/database"
 	"github.com/sirupsen/logrus"
 )
 
@@ -21,9 +20,9 @@ func (t *TestTask) SetParams(params string) {
 }
 
 func init() {
-	if err := database.GetDB().AutoMigrate(&Record{}, &Schedule{}); err != nil {
-		logrus.Errorf("auto migrate failed, error: %v", err)
-	}
+	//if err := database.GetDB().AutoMigrate(&Record{}, &Schedule{}); err != nil {
+	//	logrus.Errorf("auto migrate failed, error: %v", err)
+	//}
 
 	if err := GetExecutorManager().Register("test", func() Task {
 		return &TestTask{}

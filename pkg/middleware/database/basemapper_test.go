@@ -1,10 +1,12 @@
 package database
 
 import (
+	"github.com/MR5356/aurora/pkg/config"
 	"github.com/MR5356/aurora/pkg/util/structutil"
-	"github.com/sirupsen/logrus"
 	"testing"
 )
+
+var _ = config.New(config.WithDatabase("sqlite", ":memory:"))
 
 type User struct {
 	ID   string `gorm:"primary_key"`
@@ -14,6 +16,11 @@ type User struct {
 }
 
 func TestBaseMapper(t *testing.T) {
+	err := GetDB().AutoMigrate(&User{})
+	if err != nil {
+		t.Fatalf("Failed to initialize database: %v", err)
+	}
+
 	mapper := NewMapper(GetDB(), &User{})
 
 	u1 := &User{
@@ -21,7 +28,7 @@ func TestBaseMapper(t *testing.T) {
 		Name: "test",
 	}
 
-	err := mapper.Insert(u1)
+	err = mapper.Insert(u1)
 	if err != nil {
 		t.Fatalf("Failed to insert user: %v", err)
 	}
@@ -99,12 +106,5 @@ func TestBaseMapper(t *testing.T) {
 	err = mapper.Delete(u1)
 	if err != nil {
 		t.Fatalf("Failed to delete user: %v", err)
-	}
-}
-
-func init() {
-	err := GetDB().AutoMigrate(&User{})
-	if err != nil {
-		logrus.Fatalf("Failed to initialize database: %v", err)
 	}
 }
