@@ -1,6 +1,7 @@
 package ginutil
 
 import (
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"net/http"
 	"net/http/httptest"
@@ -9,8 +10,9 @@ import (
 
 func setupRoute() *gin.Engine {
 	r := gin.Default()
-	r.GET("/id", func(c *gin.Context) {
-		c.String(200, GetId(c))
+	r.GET("/page", func(c *gin.Context) {
+		page, size := GetPageParams(c)
+		c.String(200, fmt.Sprintf("page: %d, size: %d", page, size))
 	})
 
 	r.GET("/token", func(c *gin.Context) {
@@ -20,27 +22,28 @@ func setupRoute() *gin.Engine {
 	return r
 }
 
-func TestGetId(t *testing.T) {
+func TestGetPageParams(t *testing.T) {
 	r := setupRoute()
 
 	tests := []struct {
 		name string
-		id   string
+		page int
+		size int
 	}{
 		{
 			name: "test",
-			id:   "test",
+			page: 10,
+			size: 1,
 		},
 		{
 			name: "test-nil",
-			id:   "",
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			rr := httptest.NewRecorder()
 
-			req, err := http.NewRequest("GET", "/id?id="+tt.id, nil)
+			req, err := http.NewRequest("GET", fmt.Sprintf("/page?page=%d&size=%d", tt.page, tt.size), nil)
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -48,8 +51,8 @@ func TestGetId(t *testing.T) {
 			if rr.Code != http.StatusOK {
 				t.Errorf("GetId() = %v, want %v", rr.Code, http.StatusOK)
 			}
-			if rr.Body.String() != tt.id {
-				t.Errorf("GetId() = %v, want %v", rr.Body.String(), tt.id)
+			if rr.Body.String() != fmt.Sprintf("page: %d, size: %d", tt.page, tt.size) {
+				t.Errorf("GetId() = %v, want %v", rr.Body.String(), fmt.Sprintf("page: %d, size: %d", tt.page, tt.size))
 			}
 		})
 	}
