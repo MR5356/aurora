@@ -10,11 +10,6 @@ type MemoryEventBus struct {
 	evbus        evbus.Bus
 }
 
-func (eb *MemoryEventBus) Unlock(key string) error {
-	//TODO implement me
-	panic("implement me")
-}
-
 func NewMemoryEventBus() *MemoryEventBus {
 	return &MemoryEventBus{
 		evbus:        evbus.New(),

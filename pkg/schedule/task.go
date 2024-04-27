@@ -43,7 +43,7 @@ func (w *WrappedTask) Run() {
 	}
 
 	defer func(bus eventbus.EventBus, key string) {
-		err := bus.Unlock(key)
+		err := bus.UnLock(key)
 		if err != nil {
 			logrus.Errorf("task %s unlock failed, error: %v", w.schedule.ID, err)
 		}
@@ -78,4 +78,11 @@ func (w *WrappedTask) Run() {
 
 	// run task
 	w.Task.Run()
+}
+
+func init() {
+	err := database.GetDB().AutoMigrate(&Record{})
+	if err != nil {
+		logrus.Fatalf("Failed to initialize database: %v", err)
+	}
 }

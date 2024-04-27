@@ -24,9 +24,9 @@ type Server struct {
 	GracePeriod int    `json:"gracePeriod" yaml:"gracePeriod" default:"30"`
 }
 
-func Current() *Config {
+func Current(cfgs ...Cfg) *Config {
 	if config == nil {
-		config = New()
+		config = New(cfgs...)
 	}
 	return config
 }
@@ -44,7 +44,7 @@ func New(cfgs ...Cfg) *Config {
 
 type Database struct {
 	Driver string `json:"driver" yaml:"driver" default:"sqlite"`
-	DSN    string `json:"dsn" yaml:"dsn" default:"db.sqlite"`
+	DSN    string `json:"dsn" yaml:"dsn" default:":memory:"`
 
 	MaxIdleConn int           `json:"maxIdleConn" yaml:"maxIdleConn" default:"10"`
 	MaxOpenConn int           `json:"maxOpenConn" yaml:"maxOpenConn" default:"40"`

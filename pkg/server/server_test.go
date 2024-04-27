@@ -8,7 +8,7 @@ import (
 )
 
 func TestNew(t *testing.T) {
-	cfg := config.New()
+	cfg := config.New(config.WithDatabase("sqlite", ":memory:"))
 
 	svc, err := New(cfg)
 	if err != nil {
@@ -21,7 +21,7 @@ func TestNew(t *testing.T) {
 }
 
 func TestServer_Run(t *testing.T) {
-	cfg := config.New()
+	cfg := config.New(config.WithDatabase("sqlite", ":memory:"))
 
 	svc, err := New(cfg)
 	if err != nil {

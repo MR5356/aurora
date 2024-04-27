@@ -27,8 +27,8 @@ type EventBus interface {
 	// TryLock try lock, if lock success return nil
 	TryLock(key string) error
 
-	// Unlock unlock
-	Unlock(key string) error
+	// UnLock unLock
+	UnLock(key string) error
 }
 
 func GetEventBus() EventBus {

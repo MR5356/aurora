@@ -91,6 +91,6 @@ func AnyIsNil(v any) bool {
 	case bool:
 		return !v.(bool)
 	default:
-		return false
+		return reflect.DeepEqual(v, reflect.Zero(reflect.TypeOf(v)).Interface())
 	}
 }
