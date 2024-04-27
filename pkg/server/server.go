@@ -45,7 +45,7 @@ func New(cfg *config.Config) (server *Server, err error) {
 
 	// 404
 	engine.NoRoute(func(ctx *gin.Context) {
-		response.Error(ctx, response.CodeNotFound, response.MessageNotFound)
+		response.Error(ctx, response.CodeNotFound)
 	})
 
 	api := engine.Group(cfg.Server.Prefix)

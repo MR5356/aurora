@@ -22,7 +22,8 @@ deps:  ## Install dependencies
 
 .PHONY: test
 test: deps  ## Run unit tests
-	go test ./... -cover
+	go test $(shell go list ./... | grep -v /docs) -coverprofile=coverage.out
+	go tool cover -func=coverage.out
 
 .PHONY: clean
 clean:  ## Clean build artifacts

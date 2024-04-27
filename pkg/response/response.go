@@ -23,6 +23,10 @@ func Success(ctx *gin.Context, data any) {
 	New(ctx, http.StatusOK, CodeSuccess, MessageSuccess, data)
 }
 
-func Error(ctx *gin.Context, code string, msg string) {
+func Error(ctx *gin.Context, code string) {
+	New(ctx, http.StatusOK, code, message(code), nil)
+}
+
+func ErrorWithMsg(ctx *gin.Context, code string, msg string) {
 	New(ctx, http.StatusOK, code, msg, nil)
 }

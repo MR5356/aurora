@@ -128,3 +128,6 @@ vendordiff.patch
 
 # swagger
 docs
+
+# test coverage
+coverage.out
