@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"github.com/MR5356/aurora/docs"
 	"github.com/MR5356/aurora/pkg/config"
+	"github.com/MR5356/aurora/pkg/domain/schedule"
 	_ "github.com/MR5356/aurora/pkg/log"
 	"github.com/MR5356/aurora/pkg/middleware/database"
 	"github.com/MR5356/aurora/pkg/response"
@@ -74,7 +75,9 @@ func New(cfg *config.Config) (server *Server, err error) {
 	api.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
 	// service
-	services := []Service{}
+	services := []Service{
+		schedule.GetService(),
+	}
 
 	for _, svc := range services {
 		if err := svc.Initialize(); err != nil {
@@ -83,7 +86,9 @@ func New(cfg *config.Config) (server *Server, err error) {
 	}
 
 	// controller
-	controllers := []Controller{}
+	controllers := []Controller{
+		schedule.NewController(),
+	}
 
 	for _, ctl := range controllers {
 		ctl.RegisterRoute(api)

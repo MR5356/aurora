@@ -53,7 +53,7 @@ func (w *WrappedTask) Run() {
 	record := &Record{
 		ScheduleID: w.schedule.ID,
 		Title:      w.schedule.Title,
-		TaskName:   w.schedule.TaskName,
+		TaskName:   w.schedule.Executor,
 		Params:     w.schedule.Params,
 		Status:     TaskStatusRunning,
 	}
@@ -78,11 +78,4 @@ func (w *WrappedTask) Run() {
 
 	// run task
 	w.Task.Run()
-}
-
-func init() {
-	err := database.GetDB().AutoMigrate(&Record{})
-	if err != nil {
-		logrus.Fatalf("Failed to initialize database: %v", err)
-	}
 }

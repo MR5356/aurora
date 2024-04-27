@@ -8,14 +8,14 @@ import (
 )
 
 type Schedule struct {
-	ID         uuid.UUID `json:"id" gorm:"primary_key;type:uuid;"`
+	ID         uuid.UUID `json:"id" gorm:"primary_key;type:uuid;" swaggerignore:"true"`
 	Title      string    `json:"title" validate:"required"`
 	Desc       string    `json:"desc"`
-	CronString string    `json:"cronString" validate:"required"`
-	TaskName   string    `json:"taskName" validate:"required"`
-	NextTime   time.Time `json:"nextTime" gorm:"-"`
+	CronString string    `json:"cronString" validate:"required" example:"*/5 * * * * *"`
+	Executor   string    `json:"executor" validate:"required" example:"test"`
+	NextTime   time.Time `json:"nextTime" gorm:"-" swaggerignore:"true"`
 	Params     string    `json:"params"`
-	Enabled    bool      `json:"enabled"`
+	Enabled    bool      `json:"enabled" example:"true"`
 	Status     string    `json:"status"`
 
 	database.BaseModel
@@ -31,7 +31,7 @@ func (s *Schedule) BeforeCreate(tx *gorm.DB) error {
 }
 
 type Record struct {
-	ID         uuid.UUID `json:"id" gorm:"primary_key;type:uuid;"`
+	ID         uuid.UUID `json:"id" gorm:"primary_key;type:uuid;" swaggerignore:"true"`
 	ScheduleID uuid.UUID `json:"scheduleID" gorm:"type:uuid;"`
 	Title      string    `json:"title" validate:"required"`
 	TaskName   string    `json:"taskName" validate:"required"`

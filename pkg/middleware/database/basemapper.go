@@ -19,15 +19,18 @@ type Pager[T any] struct {
 	Data        []T   `json:"data"`
 }
 
-func (m *BaseMapper[T]) Insert(entity T) error {
+func (m *BaseMapper[T]) Insert(entity T, db ...*gorm.DB) error {
+	if len(db) > 0 {
+		return db[0].Create(entity).Error
+	}
 	return m.DB.Create(entity).Error
 }
 
-func (m *BaseMapper[T]) Delete(entity T) error {
+func (m *BaseMapper[T]) Delete(entity T, db ...*gorm.DB) error {
 	return m.DB.Delete(entity).Error
 }
 
-func (m *BaseMapper[T]) Update(entity T, fields map[string]interface{}) error {
+func (m *BaseMapper[T]) Update(entity T, fields map[string]interface{}, db ...*gorm.DB) error {
 	return m.DB.Model(entity).Where(entity).Updates(fields).Error
 }
 

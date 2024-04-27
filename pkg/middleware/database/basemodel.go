@@ -6,7 +6,7 @@ import (
 )
 
 type BaseModel struct {
-	CreatedAt time.Time      `json:"createdAt"`
-	UpdatedAt time.Time      `json:"updatedAt"`
-	DeleteAt  gorm.DeletedAt `json:"-"`
+	CreatedAt time.Time      `json:"createdAt" swaggerignore:"true"`
+	UpdatedAt time.Time      `json:"updatedAt" swaggerignore:"true"`
+	DeleteAt  gorm.DeletedAt `json:"-" swaggerignore:"true"`
 }

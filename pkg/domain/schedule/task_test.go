@@ -15,7 +15,7 @@ func TestNewWrapper(t *testing.T) {
 		Title:      "test",
 		Desc:       "test",
 		CronString: "*/5 * * * * *",
-		TaskName:   "test",
+		Executor:   "test",
 		Params:     "",
 		Enabled:    true,
 	})
@@ -31,7 +31,7 @@ func TestNewWrapperWithError(t *testing.T) {
 		Title:      "test",
 		Desc:       "test",
 		CronString: "*/5 * * * * *",
-		TaskName:   "test",
+		Executor:   "test",
 		Params:     "",
 		Enabled:    true,
 	})
