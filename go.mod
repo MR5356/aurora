@@ -3,6 +3,7 @@ module github.com/MR5356/aurora
 go 1.22
 
 require (
+	github.com/antonfisher/nested-logrus-formatter v1.3.1
 	github.com/asaskevich/EventBus v0.0.0-20200907212545-49d423059eef
 	github.com/avast/retry-go v3.0.0+incompatible
 	github.com/gin-gonic/gin v1.9.1

@@ -16,6 +16,7 @@ func NewAuroraCommand() *cobra.Command {
 		RunE: func(cmd *cobra.Command, args []string) error {
 			cfg := config.New(
 				config.WithDebug(true),
+				config.WithDatabase("sqlite", "db.sqlite"),
 			)
 
 			svc, err := server.New(cfg)

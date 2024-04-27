@@ -2,12 +2,15 @@ package server
 
 import (
 	"context"
+	"embed"
 	"errors"
 	"fmt"
 	"github.com/MR5356/aurora/docs"
 	"github.com/MR5356/aurora/pkg/config"
+	_ "github.com/MR5356/aurora/pkg/log"
 	"github.com/MR5356/aurora/pkg/middleware/database"
 	"github.com/MR5356/aurora/pkg/response"
+	"github.com/MR5356/aurora/pkg/server/ginmiddleware"
 	"github.com/gin-gonic/gin"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"github.com/sirupsen/logrus"
@@ -25,8 +28,11 @@ type Server struct {
 	engine *gin.Engine
 }
 
+//go:embed static
+var fs embed.FS
+
 func New(cfg *config.Config) (server *Server, err error) {
-	// init logger level
+	// init log level
 	if cfg.Server.Debug {
 		gin.SetMode(gin.DebugMode)
 		logrus.SetLevel(logrus.DebugLevel)
@@ -41,7 +47,10 @@ func New(cfg *config.Config) (server *Server, err error) {
 	engine.MaxMultipartMemory = 8 << 20
 
 	// init gin middleware
-	engine.Use()
+	engine.Use(
+		ginmiddleware.Record(),
+		ginmiddleware.Static("/", ginmiddleware.NewStaticFileSystem(fs, "static")),
+	)
 
 	// 404
 	engine.NoRoute(func(ctx *gin.Context) {
