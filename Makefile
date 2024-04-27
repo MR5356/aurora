@@ -21,7 +21,7 @@ deps:  ## Install dependencies
 	go get -d -v -t ./...
 
 .PHONY: test
-test: deps  ## Run unit tests
+test: deps doc  ## Run unit tests
 	go test $(shell go list ./... | grep -v /docs) -coverprofile=coverage.out
 	go tool cover -func=coverage.out
 
