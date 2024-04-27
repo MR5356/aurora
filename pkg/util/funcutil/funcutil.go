@@ -1,7 +1,6 @@
 package funcutil
 
 import (
-	"fmt"
 	"runtime"
 	"strings"
 )
@@ -19,7 +18,7 @@ func IsCalledFromInit() bool {
 
 		// check if the function name is "init"
 		funcName := runtime.FuncForPC(frame.PC).Name()
-		fmt.Println(funcName)
+		//fmt.Println(funcName)
 		if funcName == "init" || strings.HasSuffix(funcName, ".init") || strings.Contains(funcName, ".init.") {
 			return true
 		}
