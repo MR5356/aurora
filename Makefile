@@ -17,11 +17,11 @@ doc:  ## Generate documentation
 	swag fmt -d cmd/aurora -g aurora.go
 
 .PHONY: deps
-deps:  ## Install dependencies
+deps: doc  ## Install dependencies
 	go get -d -v -t ./...
 
 .PHONY: test
-test: deps doc  ## Run unit tests
+test: deps  ## Run unit tests
 	go test $(shell go list ./... | grep -v /docs) -coverprofile=coverage.out
 	go tool cover -func=coverage.out
 
