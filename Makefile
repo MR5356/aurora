@@ -7,6 +7,15 @@ BIN_DIR := $(OUT_DIR)/bin
 help:  ## Show this help
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-16s\033[0m %s\n", $$1, $$2}'
 
+.PHONY: init
+init:  ## Initialize the project
+	@go install github.com/swaggo/swag/cmd/swag@latest
+
+.PHONY: doc
+doc:  ## Generate documentation
+	swag init -d cmd/aurora -g aurora.go
+	swag fmt -d cmd/aurora -g aurora.go
+
 .PHONY: deps
 deps:  ## Install dependencies
 	go get -d -v -t ./...
