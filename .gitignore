@@ -131,3 +131,5 @@ docs
 
 # test coverage
 coverage.out
+
+config-dev.yaml

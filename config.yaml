@@ -1,0 +1,14 @@
+server:
+  port: 80
+  prefix: /api/v1
+  debug: false
+  gracePeriod: 30
+
+database:
+  driver: sqlite
+  dsn: db.sqlite
+
+jwt:
+  secret: aurora
+  issuer: fun.toodo.aurora
+  expire: 720h

@@ -3,15 +3,16 @@ package main
 import (
 	"github.com/MR5356/aurora/pkg/config"
 	"github.com/MR5356/aurora/pkg/server"
+	"github.com/MR5356/aurora/pkg/util/fileutil"
 	"github.com/MR5356/aurora/pkg/version"
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 )
 
 var (
-	port            int
-	debug           bool
-	dbDriver, dbDSN string
+	port                        int
+	debug                       bool
+	configFile, dbDriver, dbDSN string
 )
 
 func NewAuroraCommand() *cobra.Command {
@@ -25,6 +26,12 @@ func NewAuroraCommand() *cobra.Command {
 				config.WithPort(port),
 				config.WithDatabase(dbDriver, dbDSN),
 			)
+			if len(configFile) > 0 {
+				logrus.Infof("read config file: %s", configFile)
+				if err := fileutil.NewStructFromFile(configFile, cfg); err != nil {
+					logrus.Fatalf("read config file failed: %v", err)
+				}
+			}
 
 			svc, err := server.New(cfg)
 			if err != nil {
@@ -41,6 +48,7 @@ func NewAuroraCommand() *cobra.Command {
 	cmd.SilenceErrors = true
 	cmd.SilenceUsage = true
 
+	cmd.PersistentFlags().StringVarP(&configFile, "config", "c", "", "config file")
 	cmd.PersistentFlags().BoolVarP(&debug, "debug", "d", false, "enable debug mode")
 	cmd.PersistentFlags().IntVarP(&port, "port", "p", 80, "server port")
 	cmd.PersistentFlags().StringVar(&dbDriver, "dbDriver", "sqlite", "database driver")

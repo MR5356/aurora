@@ -8,8 +8,11 @@ import (
 	"github.com/MR5356/aurora/docs"
 	"github.com/MR5356/aurora/pkg/config"
 	"github.com/MR5356/aurora/pkg/domain/schedule"
+	"github.com/MR5356/aurora/pkg/domain/user"
+	"github.com/MR5356/aurora/pkg/domain/user/oauth"
 	_ "github.com/MR5356/aurora/pkg/log"
 	"github.com/MR5356/aurora/pkg/middleware/database"
+	"github.com/MR5356/aurora/pkg/middleware/eventbus"
 	"github.com/MR5356/aurora/pkg/response"
 	"github.com/MR5356/aurora/pkg/server/ginmiddleware"
 	"github.com/MR5356/aurora/pkg/util/structutil"
@@ -44,8 +47,10 @@ func New(cfg *config.Config) (server *Server, err error) {
 		gin.SetMode(gin.ReleaseMode)
 	}
 
-	// init database
-	database.GetDB()
+	// init middleware
+	oauth.NewOAuthManager(cfg)
+	database.NewDatabase(cfg)
+	eventbus.NewEventBus(cfg)
 
 	engine := gin.Default()
 	engine.MaxMultipartMemory = 8 << 20
@@ -80,6 +85,7 @@ func New(cfg *config.Config) (server *Server, err error) {
 	// service
 	services := []Service{
 		schedule.GetService(),
+		user.GetService(),
 	}
 
 	for _, svc := range services {
@@ -91,6 +97,7 @@ func New(cfg *config.Config) (server *Server, err error) {
 	// controller
 	controllers := []Controller{
 		schedule.NewController(),
+		user.NewController(),
 	}
 
 	for _, ctl := range controllers {

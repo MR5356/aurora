@@ -16,6 +16,7 @@ type User struct {
 }
 
 func TestBaseMapper(t *testing.T) {
+	NewDatabase(config.Current(config.WithDatabase("sqlite", ":memory:")))
 	err := GetDB().AutoMigrate(&User{})
 	if err != nil {
 		t.Fatalf("Failed to initialize database: %v", err)

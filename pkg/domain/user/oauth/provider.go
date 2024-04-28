@@ -1,0 +1,49 @@
+package oauth
+
+import (
+	"errors"
+	"github.com/MR5356/aurora/pkg/config"
+	"sync"
+)
+
+var (
+	once    sync.Once
+	manager *AuthManager
+)
+
+const (
+	AuthTypeGithub = "github"
+	AuthTypeGitlab = "gitlab"
+)
+
+var (
+	ErrAuthTypeNotSupport = errors.New("auth type not support")
+	ErrAuthFailed         = errors.New("auth failed, please try again")
+)
+
+type Provider interface {
+	GetInfo(code string) (*UserInfo, error)
+	GetAuthURL(redirectURL string) string
+}
+
+type AuthManager struct {
+	config map[string]config.OAuthConfig
+}
+
+func NewOAuthManager(cfg *config.Config) *AuthManager {
+	once.Do(func() {
+		manager = &AuthManager{
+			config: cfg.OAuthConfig,
+		}
+	})
+	return manager
+}
+
+type UserInfo struct {
+	Username string `json:"username"`
+	Nickname string `json:"nickname"`
+	Email    string `json:"email"`
+	Phone    string `json:"phone"`
+	Avatar   string `json:"avatar"`
+	UserType string `json:"userType"`
+}

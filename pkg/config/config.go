@@ -13,15 +13,10 @@ const (
 var config *Config
 
 type Config struct {
-	Server   Server   `json:"server" yaml:"server"`
-	Database Database `json:"database" yaml:"database"`
-}
-
-type Server struct {
-	Port        int    `json:"port" yaml:"port" default:"80"`
-	Prefix      string `json:"prefix" yaml:"prefix" default:"/api/v1"`
-	Debug       bool   `json:"debug" yaml:"debug" default:"false"`
-	GracePeriod int    `json:"gracePeriod" yaml:"gracePeriod" default:"30"`
+	Server      Server                 `json:"server" yaml:"server"`
+	Database    Database               `json:"database" yaml:"database"`
+	JWT         JWT                    `json:"jwt" yaml:"jwt"`
+	OAuthConfig map[string]OAuthConfig `json:"oauth" yaml:"oauth"`
 }
 
 func Current(cfgs ...Cfg) *Config {
@@ -40,6 +35,28 @@ func New(cfgs ...Cfg) *Config {
 	}
 
 	return config
+}
+
+type Server struct {
+	BaseURL     string `json:"baseURL" yaml:"baseURL" default:"http://localhost"`
+	Port        int    `json:"port" yaml:"port" default:"80"`
+	Prefix      string `json:"prefix" yaml:"prefix" default:"/api/v1"`
+	Debug       bool   `json:"debug" yaml:"debug" default:"false"`
+	GracePeriod int    `json:"gracePeriod" yaml:"gracePeriod" default:"30"`
+}
+
+type JWT struct {
+	Secret string        `json:"secret" yaml:"secret" default:"aurora"`
+	Issuer string        `json:"issuer" yaml:"issuer" default:"fun.toodo.aurora"`
+	Expire time.Duration `json:"expire" yaml:"expire" default:"720h"`
+}
+
+type OAuthConfig struct {
+	AuthType     string `json:"authType" yaml:"authType"`
+	AuthURL      string `json:"authURL" yaml:"authURL"`
+	TokenURL     string `json:"tokenURL" yaml:"tokenURL"`
+	ClientId     string `json:"clientId" yaml:"clientId"`
+	ClientSecret string `json:"clientSecret" yaml:"clientSecret"`
 }
 
 type Database struct {

@@ -2,6 +2,8 @@ package schedule
 
 import (
 	"github.com/MR5356/aurora/pkg/config"
+	"github.com/MR5356/aurora/pkg/middleware/database"
+	"github.com/MR5356/aurora/pkg/middleware/eventbus"
 	"github.com/google/uuid"
 	"testing"
 )
@@ -9,6 +11,9 @@ import (
 var _ = config.New(config.WithDatabase("sqlite", ":memory:"))
 
 func TestNewWrapper(t *testing.T) {
+	cfg := config.Current(config.WithDatabase("sqlite", ":memory:"))
+	eventbus.NewEventBus(cfg)
+	database.NewDatabase(cfg)
 	task := &TestTask{}
 
 	task.SetParams("test")

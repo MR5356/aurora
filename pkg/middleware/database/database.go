@@ -5,7 +5,6 @@ import (
 	"errors"
 	"github.com/MR5356/aurora/pkg/config"
 	"github.com/MR5356/aurora/pkg/util/funcutil"
-	"github.com/avast/retry-go"
 	"github.com/glebarez/sqlite"
 	"github.com/sirupsen/logrus"
 	"gorm.io/driver/mysql"
@@ -28,24 +27,13 @@ var (
 	DBDriverNotSupport = errors.New("database driver not support")
 )
 
-func GetDB() *Database {
+func NewDatabase(cfg *config.Config) *Database {
 	if funcutil.IsCalledFromInit() {
 		logrus.Fatalf("GetDB should not be called from init")
 	}
 	once.Do(func() {
-		err := retry.Do(
-			func() (err error) {
-				db, err = initDB()
-				return err
-			},
-			retry.Attempts(config.DefaultRetryCount),
-			retry.Delay(config.DefaultRetryDelay),
-			retry.LastErrorOnly(true),
-			retry.DelayType(retry.DefaultDelayType),
-			retry.OnRetry(func(n uint, err error) {
-				logrus.Warnf("[%d/%d]: retry to initialize database: %v", n+1, config.DefaultRetryCount, err)
-			}),
-		)
+		var err error
+		db, err = initDB(cfg)
 		if err != nil {
 			logrus.Fatalf("Failed to initialize database: %v", err)
 		}
@@ -53,8 +41,30 @@ func GetDB() *Database {
 	return db
 }
 
-func initDB() (database *Database, err error) {
-	cfg := config.Current()
+func GetDB() *Database {
+	//once.Do(func() {
+	//	err := retry.Do(
+	//		func() (err error) {
+	//			db, err = initDB(config.Current())
+	//			return err
+	//		},
+	//		retry.Attempts(config.DefaultRetryCount),
+	//		retry.Delay(config.DefaultRetryDelay),
+	//		retry.LastErrorOnly(true),
+	//		retry.DelayType(retry.DefaultDelayType),
+	//		retry.OnRetry(func(n uint, err error) {
+	//			logrus.Warnf("[%d/%d]: retry to initialize database: %v", n+1, config.DefaultRetryCount, err)
+	//		}),
+	//	)
+	//	if err != nil {
+	//		logrus.Fatalf("Failed to initialize database: %v", err)
+	//	}
+	//})
+	return db
+}
+
+func initDB(cfg *config.Config) (database *Database, err error) {
+	//cfg := config.Current()
 	var driver gorm.Dialector
 	logrus.Infof("database driver: %s, dsn: %s", cfg.Database.Driver, cfg.Database.DSN)
 	switch cfg.Database.Driver {
@@ -92,6 +102,6 @@ func initDB() (database *Database, err error) {
 	db.SetConnMaxIdleTime(cfg.Database.ConnMaxIdle)
 
 	dbStat, _ := json.Marshal(db.Stats())
-	logrus.Debugf("database stats: %s", dbStat)
+	logrus.Infof("database stats: %s", dbStat)
 	return &Database{client}, nil
 }
