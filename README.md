@@ -21,6 +21,13 @@ The [repository](/) hosts all information about
 building Aurora from source, how to contribute code 
 and documentation, who to contact about what, etc.
 
+##### If you have a working Go environment
+```shell
+git clone https://github.com/MR5356/aurora.git
+cd aurora
+make init build
+```
+
 ## Support
 
 If you have questions, reach out to us one way or another.

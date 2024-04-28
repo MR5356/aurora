@@ -3,6 +3,9 @@ OUT_DIR ?= _output
 BIN_DIR := $(OUT_DIR)/bin
 MODULE_NAME = github.com/MR5356/aurora
 
+IMAGE_REGISTRY ?= toodo/aurora
+TARGET_PLATFORM ?= linux/arm64,linux/amd64
+
 VERSION ?= $(shell git describe --tags --abbrev=0 2>/dev/null)
 
 # if git describe error
@@ -53,6 +56,10 @@ release: clean deps  ## Build and release the binary
 test: deps  ## Run unit tests
 	go test $(shell go list ./... | grep -v /docs) -coverprofile=coverage.out
 	go tool cover -func=coverage.out
+
+.PHONY: docker
+docker:  ## Build docker image
+	docker buildx build --platform $(TARGET_PLATFORM) -t $(IMAGE_REGISTRY):$(VERSION) . --push
 
 .PHONY: clean
 clean:  ## Clean build artifacts
