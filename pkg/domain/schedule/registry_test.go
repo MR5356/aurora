@@ -10,7 +10,7 @@ var _ = config.New(config.WithDatabase("sqlite", ":memory:"))
 func TestGetExecutorManager(t *testing.T) {
 	m := GetExecutorManager()
 
-	err := m.Register("test", func() Task {
+	err := m.Register(Executor{Name: "test", DisplayName: "test executor"}, func() Task {
 		return &TestTask{}
 	})
 
@@ -18,7 +18,7 @@ func TestGetExecutorManager(t *testing.T) {
 		t.Errorf("expected no error, got %v", err)
 	}
 
-	err = m.Register("test", func() Task {
+	err = m.Register(Executor{Name: "test", DisplayName: "test executor"}, func() Task {
 		return &TestTask{}
 	})
 

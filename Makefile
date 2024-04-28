@@ -41,7 +41,7 @@ deps: doc  ## Install dependencies
 	go get -d -v -t ./...
 
 .PHONY: build
-build: deps  ## Build the binary
+build: clean deps  ## Build the binary
 	go build -ldflags $(GO_FLAGS) -o $(BIN_DIR)/aurora ./cmd/aurora
 
 .PHONY: release

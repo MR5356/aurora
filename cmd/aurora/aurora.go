@@ -8,6 +8,12 @@ import (
 	"github.com/spf13/cobra"
 )
 
+var (
+	port            int
+	debug           bool
+	dbDriver, dbDSN string
+)
+
 func NewAuroraCommand() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:     "aurora",
@@ -15,8 +21,9 @@ func NewAuroraCommand() *cobra.Command {
 		Version: version.Version,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			cfg := config.New(
-				config.WithDebug(true),
-				config.WithDatabase("sqlite", "db.sqlite"),
+				config.WithDebug(debug),
+				config.WithPort(port),
+				config.WithDatabase(dbDriver, dbDSN),
 			)
 
 			svc, err := server.New(cfg)
@@ -33,6 +40,11 @@ func NewAuroraCommand() *cobra.Command {
 
 	cmd.SilenceErrors = true
 	cmd.SilenceUsage = true
+
+	cmd.PersistentFlags().BoolVarP(&debug, "debug", "d", false, "enable debug mode")
+	cmd.PersistentFlags().IntVarP(&port, "port", "p", 80, "server port")
+	cmd.PersistentFlags().StringVar(&dbDriver, "dbDriver", "sqlite", "database driver")
+	cmd.PersistentFlags().StringVar(&dbDSN, "dbDSN", "db.sqlite", "database DSN")
 
 	return cmd
 }
