@@ -7,13 +7,13 @@ import (
 )
 
 type User struct {
-	ID       uuid.UUID `json:"id" gorm:"primary_key;type:uuid;" swaggerignore:"true"`
-	Username string    `json:"username" gorm:"unique;not null" validate:"required"`
-	Nickname string    `json:"nickname" validate:"required"`
-	Password string    `json:"password" validate:"required"`
-	Avatar   string    `json:"avatar"`
-	Email    string    `json:"email" validate:"required"`
-	Phone    string    `json:"phone" validate:"required"`
+	ID       string `json:"id" gorm:"primary_key;" swaggerignore:"true"`
+	Username string `json:"username" gorm:"unique;not null" validate:"required"`
+	Nickname string `json:"nickname" validate:"required"`
+	Password string `json:"password" validate:"required"`
+	Avatar   string `json:"avatar"`
+	Email    string `json:"email" validate:"required"`
+	Phone    string `json:"phone" validate:"required"`
 
 	database.BaseModel
 }
@@ -23,7 +23,7 @@ func (u *User) TableName() string {
 }
 
 func (u *User) BeforeCreate(tx *gorm.DB) error {
-	u.ID = uuid.New()
+	u.ID = uuid.New().String()
 	return nil
 }
 
@@ -45,8 +45,8 @@ func (g *Group) BeforeCreate(tx *gorm.DB) error {
 }
 
 type Relation struct {
-	UserID  uuid.UUID `json:"user_id" gorm:"not null" validate:"required"`
-	GroupID uuid.UUID `json:"group_id" gorm:"not null" validate:"required"`
+	UserID  string    `json:"user_id" gorm:"not null" validate:"required"`
+	GroupID uuid.UUID `json:"group_id" gorm:"not null;type:uuid;" validate:"required"`
 }
 
 func (r *Relation) TableName() string {

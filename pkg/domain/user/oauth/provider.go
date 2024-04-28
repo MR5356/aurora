@@ -39,7 +39,27 @@ func NewOAuthManager(cfg *config.Config) *AuthManager {
 	return manager
 }
 
+func GetOAuthManager() *AuthManager {
+	return manager
+}
+
+func (m *AuthManager) GetAuthProvider(authName string) (Provider, error) {
+	if conf, ok := m.config[authName]; !ok {
+		return nil, ErrAuthTypeNotSupport
+	} else {
+		switch conf.AuthType {
+		case AuthTypeGithub:
+			return NewGithubProvider(conf), nil
+		case AuthTypeGitlab:
+			return NewGitlabAuth(authName, conf), nil
+		default:
+			return nil, ErrAuthTypeNotSupport
+		}
+	}
+}
+
 type UserInfo struct {
+	ID       string `json:"id"`
 	Username string `json:"username"`
 	Nickname string `json:"nickname"`
 	Email    string `json:"email"`

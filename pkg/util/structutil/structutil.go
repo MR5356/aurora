@@ -94,3 +94,10 @@ func AnyIsNil(v any) bool {
 		return reflect.DeepEqual(v, reflect.Zero(reflect.TypeOf(v)).Interface())
 	}
 }
+
+func ValueOfPtr[T string | int | int64 | int32](ptr *T, defaultVal T) T {
+	if ptr == nil {
+		return defaultVal
+	}
+	return *ptr
+}

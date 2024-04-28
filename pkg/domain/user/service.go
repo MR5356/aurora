@@ -1,10 +1,10 @@
 package user
 
 import (
+	"github.com/MR5356/aurora/pkg/domain/user/oauth"
 	"github.com/MR5356/aurora/pkg/middleware/database"
 	"github.com/MR5356/aurora/pkg/util/structutil"
 	"github.com/MR5356/aurora/pkg/util/validate"
-	"github.com/google/uuid"
 	"github.com/sirupsen/logrus"
 	"sync"
 )
@@ -44,8 +44,8 @@ func (s *Service) AddUser(user *User) error {
 }
 
 // DeleteUser delete user
-func (s *Service) DeleteUser(user *User) error {
-	if err := s.userDB.Delete(user); err != nil {
+func (s *Service) DeleteUser(userID string) error {
+	if err := s.userDB.Delete(&User{ID: userID}); err != nil {
 		logrus.Errorf("delete user failed, error: %v", err)
 		return err
 	}
@@ -67,7 +67,7 @@ func (s *Service) UpdateUser(user *User) error {
 }
 
 // DetailUser detail user
-func (s *Service) DetailUser(userID uuid.UUID) (*User, error) {
+func (s *Service) DetailUser(userID string) (*User, error) {
 	if res, err := s.userDB.Detail(&User{ID: userID}); err != nil {
 		logrus.Errorf("detail user failed, error: %v", err)
 		return nil, err
@@ -79,6 +79,24 @@ func (s *Service) DetailUser(userID uuid.UUID) (*User, error) {
 // ListUser list user
 func (s *Service) ListUser(user *User) ([]*User, error) {
 	return s.userDB.List(user)
+}
+
+// GetOAuthURL get oauth url
+func (s *Service) GetOAuthURL(authType string, redirectURL string) (string, error) {
+	if provider, err := oauth.GetOAuthManager().GetAuthProvider(authType); err != nil {
+		return "", err
+	} else {
+		return provider.GetAuthURL(redirectURL), nil
+	}
+}
+
+// GetUserInfo get user info
+func (s *Service) GetUserInfo(authType string, code string) (*oauth.UserInfo, error) {
+	if provider, err := oauth.GetOAuthManager().GetAuthProvider(authType); err != nil {
+		return nil, err
+	} else {
+		return provider.GetInfo(code)
+	}
 }
 
 func (s *Service) Initialize() error {

@@ -49,6 +49,7 @@ func New(cfg *config.Config) (server *Server, err error) {
 
 	// init middleware
 	oauth.NewOAuthManager(cfg)
+	user.NewJWTService(cfg)
 	database.NewDatabase(cfg)
 	eventbus.NewEventBus(cfg)
 
