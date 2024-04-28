@@ -53,4 +53,5 @@ func (r *Record) BeforeCreate(tx *gorm.DB) error {
 type Executor struct {
 	Name        string `json:"name"`
 	DisplayName string `json:"displayName"`
+	task        func() Task
 }

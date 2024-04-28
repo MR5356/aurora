@@ -25,18 +25,19 @@ func GetExecutorManager() *Manager {
 	return manager
 }
 
-func (m *Manager) Register(name string, task func() Task) error {
-	if _, ok := m.tasks.Load(name); ok {
-		return fmt.Errorf("task executor %s already registered", name)
+func (m *Manager) Register(executor Executor, task func() Task) error {
+	if _, ok := m.tasks.Load(executor.Name); ok {
+		return fmt.Errorf("task executor %s already registered", executor.Name)
 	}
-	m.tasks.Store(name, task)
-	logrus.Infof("task executor %s registered", name)
+	executor.task = task
+	m.tasks.Store(executor.Name, executor)
+	logrus.Infof("task executor %s registered", executor.Name)
 	return nil
 }
 
 func (m *Manager) GetExecutor(name string) (func() Task, error) {
 	if task, ok := m.tasks.Load(name); ok {
-		return task.(func() Task), nil
+		return task.(Executor).task, nil
 	} else {
 		return nil, fmt.Errorf("task executor %s not found", name)
 	}
@@ -46,10 +47,7 @@ func (m *Manager) GetExecutors() []Executor {
 	res := make([]Executor, 0)
 
 	m.tasks.Range(func(key, value interface{}) bool {
-		res = append(res, Executor{
-			Name:        key.(string),
-			DisplayName: key.(string),
-		})
+		res = append(res, value.(Executor))
 		return true
 	})
 

@@ -218,7 +218,7 @@ func (s *Service) Initialize() (err error) {
 		return err
 	}
 
-	if err := GetExecutorManager().Register("test", func() Task {
+	if err := GetExecutorManager().Register(Executor{Name: "test", DisplayName: "test executor"}, func() Task {
 		return &TestTask{}
 	}); err != nil {
 		logrus.Errorf("register test task failed, error: %v", err)
