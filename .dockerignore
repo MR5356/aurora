@@ -11,7 +11,6 @@
 *.log
 
 # 版本控制元数据
-.git
 .gitignore
 
 # 构建制品
