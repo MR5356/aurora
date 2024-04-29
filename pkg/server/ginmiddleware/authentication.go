@@ -32,7 +32,7 @@ func RegisterFilter(filters []Filter) {
 			filter.FiledName = "id"
 		}
 		filterMap.Store(key, filter)
-		logrus.Debugf("register filter: %s with %+v", key, filter)
+		logrus.Debugf("register filter: %d with %+v", key, filter)
 	}
 }
 
@@ -131,7 +131,7 @@ func AutomationFilter() gin.HandlerFunc {
 					object = ctx.Query(filter.FiledName)
 				}
 
-				logrus.Debugf("filter: %s, object: %s", filterKey, object)
+				logrus.Debugf("filter: %d, object: %s", filterKey, object)
 				if len(object) == 0 {
 					response.Error(ctx, response.CodeNoPermission)
 					ctx.Abort()
