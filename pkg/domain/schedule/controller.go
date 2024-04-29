@@ -1,10 +1,14 @@
 package schedule
 
 import (
+	"github.com/MR5356/aurora/pkg/domain/authentication"
+	"github.com/MR5356/aurora/pkg/domain/user"
 	"github.com/MR5356/aurora/pkg/response"
+	"github.com/MR5356/aurora/pkg/server/ginmiddleware"
 	"github.com/MR5356/aurora/pkg/util/ginutil"
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
+	"github.com/sirupsen/logrus"
 )
 
 type Controller struct {
@@ -32,6 +36,17 @@ func (c *Controller) handleAddSchedule(ctx *gin.Context) {
 	if err := c.service.AddSchedule(schedule); err != nil {
 		response.ErrorWithMsg(ctx, response.CodeParamsError, err.Error())
 	} else {
+		u, err := user.GetJWTService().ParseToken(ginutil.GetToken(ctx))
+		if err != nil {
+			logrus.Errorf("parse token failed, error: %v", err)
+			response.ErrorWithMsg(ctx, response.CodeServerError, err.Error())
+			return
+		}
+		if ok, err := authentication.GetPermission().AddPolicyForRoleInDomain(AuthDomain, u.ID, schedule.ID.String(), ActionOwner); err != nil || !ok {
+			logrus.Errorf("add policy for role in domain failed, error: %v", err)
+			response.ErrorWithMsg(ctx, response.CodeServerError, err.Error())
+			return
+		}
 		response.Success(ctx, nil)
 	}
 }
@@ -134,8 +149,64 @@ func (c *Controller) handleGetTaskExecutors(ctx *gin.Context) {
 	response.Success(ctx, c.service.GetTaskExecutors())
 }
 
+// @Summary	list schedule
+// @Tags		schedule
+// @Success	200	{object}	response.Response{data=[]Schedule}
+// @Router		/schedule/list [get]
+// @Produce	json
+func (c *Controller) handleListSchedule(ctx *gin.Context) {
+	res, err := c.service.scheduleDB.List(&Schedule{})
+	if err != nil {
+		response.ErrorWithMsg(ctx, response.CodeServerError, err.Error())
+	} else {
+		response.Success(ctx, res)
+	}
+}
+
 func (c *Controller) RegisterRoute(group *gin.RouterGroup) {
 	api := group.Group("/schedule")
+	api.Use(ginmiddleware.AutomationFilter())
+	ginmiddleware.RegisterFilter([]ginmiddleware.Filter{
+		{
+			Function: c.handleDeleteSchedule,
+			IsBefore: true,
+			Action:   []string{ActionAdmin, ActionOwner},
+			Domain:   AuthDomain,
+		},
+		{
+			Function: c.handleUpdateSchedule,
+			IsBefore: true,
+			Action:   []string{ActionAdmin, ActionOwner},
+			Domain:   AuthDomain,
+		},
+		{
+			Function: c.handleDetailSchedule,
+			IsBefore: true,
+			Action:   []string{ActionAdmin, ActionOwner, ActionUser},
+			Domain:   AuthDomain,
+		},
+		{
+			Function: c.handlePageSchedule,
+			IsBefore: false,
+			Action:   []string{ActionAdmin, ActionOwner, ActionUser},
+			Domain:   AuthDomain,
+		},
+		{
+			Function: c.handleListSchedule,
+			IsBefore: false,
+			Action:   []string{ActionAdmin, ActionOwner, ActionUser},
+			Domain:   AuthDomain,
+		},
+		{
+			Function: c.handlePageScheduleRecord,
+			IsBefore: false,
+			Action:   []string{ActionAdmin, ActionOwner, ActionUser},
+			Domain:   AuthDomain,
+		},
+	})
+
+	// list schedule
+	api.GET("/list", c.handleListSchedule)
 
 	// page schedule
 	api.GET("/page", c.handlePageSchedule)
@@ -147,7 +218,7 @@ func (c *Controller) RegisterRoute(group *gin.RouterGroup) {
 	api.POST("", c.handleAddSchedule)
 
 	// update schedule
-	api.PUT("", c.handleUpdateSchedule)
+	api.PUT("/:id", c.handleUpdateSchedule)
 
 	// delete schedule
 	api.DELETE("/:id", c.handleDeleteSchedule)

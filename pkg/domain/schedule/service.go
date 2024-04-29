@@ -15,6 +15,12 @@ import (
 const (
 	topicAddCronTask = "topic.schedule.add_cron_task"
 	topicDelCronTask = "topic.schedule.del_cron_task"
+
+	ActionOwner = "owner"
+	ActionAdmin = "admin"
+	ActionUser  = "user"
+
+	AuthDomain = "schedule"
 )
 
 var (

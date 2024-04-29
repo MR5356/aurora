@@ -1,7 +1,9 @@
 package authentication
 
 import (
+	"errors"
 	"github.com/MR5356/aurora/pkg/middleware/database"
+	"github.com/MR5356/aurora/pkg/util/structutil"
 	"github.com/casbin/casbin/v2"
 	"github.com/casbin/casbin/v2/model"
 	gormadapter "github.com/casbin/gorm-adapter/v3"
@@ -96,4 +98,28 @@ func (p *Permission) AddPolicies(rules [][]string) (bool, error) {
 func (p *Permission) RemovePolicies(rules [][]string) (bool, error) {
 	logrus.Debugf("RemovePolicies: %+v", rules)
 	return p.enforcer.RemovePolicies(rules)
+}
+
+func (p *Permission) FilterDataArray(data []any, actions []string, domain, role, fieldName string) ([]any, error) {
+	res := make([]any, 0)
+	for _, d := range data {
+		ok := false
+		var err error
+		for _, action := range actions {
+			obj, objOk := structutil.GetMapFiledByName(d.(map[string]any), fieldName)
+			if !objOk {
+				continue
+			}
+			ok, err = p.HasPermissionForRoleInDomain(domain, role, obj.(string), action)
+			if err != nil {
+				logrus.Errorf("has permission for role in domain failed, error: %v", err)
+				return make([]any, 0), errors.New("has permission for role in domain failed")
+			}
+
+			if ok {
+				res = append(res, d)
+			}
+		}
+	}
+	return res, nil
 }

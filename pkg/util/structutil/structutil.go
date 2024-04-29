@@ -101,3 +101,23 @@ func ValueOfPtr[T string | int | int64 | int32](ptr *T, defaultVal T) T {
 	}
 	return *ptr
 }
+
+func GetStructFiledByName[T any](object T, field string) any {
+	val := reflect.ValueOf(object)
+	if val.Kind() == reflect.Ptr {
+		val = val.Elem()
+	}
+
+	f := val.FieldByName(field)
+	if f.IsValid() {
+		return f.Interface()
+	}
+	return nil
+}
+
+func GetMapFiledByName(data map[string]interface{}, filed string) (any, bool) {
+	if value, ok := data[filed]; ok {
+		return value, ok
+	}
+	return nil, false
+}
