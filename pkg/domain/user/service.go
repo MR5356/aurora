@@ -1,6 +1,7 @@
 package user
 
 import (
+	"github.com/MR5356/aurora/pkg/domain/authentication"
 	"github.com/MR5356/aurora/pkg/domain/user/oauth"
 	"github.com/MR5356/aurora/pkg/middleware/database"
 	"github.com/MR5356/aurora/pkg/util/structutil"
@@ -103,5 +104,20 @@ func (s *Service) Initialize() error {
 	if err := database.GetDB().AutoMigrate(&User{}, &Group{}, &Relation{}); err != nil {
 		return err
 	}
+
+	// init admin group
+	adminGroups := []*Group{
+		{
+			Title:  "admin",
+			Remark: "admin group",
+		},
+	}
+
+	for _, adminGroup := range adminGroups {
+		if err := s.groupDB.Insert(adminGroup); err == nil {
+			_, _ = authentication.GetPermission().AddPolicyForRoleInDomain("*", adminGroup.ID.String(), "*", "*")
+		}
+	}
+
 	return nil
 }

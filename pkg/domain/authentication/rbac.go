@@ -100,24 +100,26 @@ func (p *Permission) RemovePolicies(rules [][]string) (bool, error) {
 	return p.enforcer.RemovePolicies(rules)
 }
 
-func (p *Permission) FilterDataArray(data []any, actions []string, domain, role, fieldName string) ([]any, error) {
+func (p *Permission) FilterDataArray(data []any, actions []string, domain string, roles []string, fieldName string) ([]any, error) {
 	res := make([]any, 0)
 	for _, d := range data {
-		ok := false
-		var err error
-		for _, action := range actions {
-			obj, objOk := structutil.GetMapFiledByName(d.(map[string]any), fieldName)
-			if !objOk {
-				continue
-			}
-			ok, err = p.HasPermissionForRoleInDomain(domain, role, obj.(string), action)
-			if err != nil {
-				logrus.Errorf("has permission for role in domain failed, error: %v", err)
-				return make([]any, 0), errors.New("has permission for role in domain failed")
-			}
+		for _, role := range roles {
+			ok := false
+			var err error
+			for _, action := range actions {
+				obj, objOk := structutil.GetMapFiledByName(d.(map[string]any), fieldName)
+				if !objOk {
+					continue
+				}
+				ok, err = p.HasPermissionForRoleInDomain(domain, role, obj.(string), action)
+				if err != nil {
+					logrus.Errorf("has permission for role in domain failed, error: %v", err)
+					return make([]any, 0), errors.New("has permission for role in domain failed")
+				}
 
-			if ok {
-				res = append(res, d)
+				if ok {
+					res = append(res, d)
+				}
 			}
 		}
 	}

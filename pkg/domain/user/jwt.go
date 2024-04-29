@@ -19,7 +19,7 @@ type JWTService struct {
 }
 
 func NewJWTService(cfg *config.Config) *JWTService {
-	once.Do(func() {
+	onceJWT.Do(func() {
 		jwtService = &JWTService{
 			jwt: cfg.JWT,
 		}

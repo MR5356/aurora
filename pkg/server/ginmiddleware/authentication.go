@@ -75,7 +75,7 @@ func (w *authedWriter) Write(body []byte) (int, error) {
 			return w.ResponseWriter.Write(errResponse)
 		}
 
-		filteredData, err := authentication.GetPermission().FilterDataArray(data, w.filter.Action, w.filter.Domain, w.user.ID, w.filter.FiledName)
+		filteredData, err := authentication.GetPermission().FilterDataArray(data, w.filter.Action, w.filter.Domain, getRoles(w.user.ID), w.filter.FiledName)
 		if err != nil {
 			return w.ResponseWriter.Write(errResponse)
 		}
@@ -88,7 +88,7 @@ func (w *authedWriter) Write(body []byte) (int, error) {
 	page, ok := isPage(res.Data.(map[string]any))
 	if ok {
 		logrus.Debugf("page: %+v", page)
-		filteredData, err := authentication.GetPermission().FilterDataArray(page.Data, w.filter.Action, w.filter.Domain, w.user.ID, w.filter.FiledName)
+		filteredData, err := authentication.GetPermission().FilterDataArray(page.Data, w.filter.Action, w.filter.Domain, getRoles(w.user.ID), w.filter.FiledName)
 		if err != nil {
 			return w.ResponseWriter.Write(errResponse)
 		}
@@ -139,16 +139,19 @@ func AutomationFilter() gin.HandlerFunc {
 				}
 
 				ok = false
-				for _, action := range filter.Action {
-					ok, err = authentication.GetPermission().HasPermissionForRoleInDomain(filter.Domain, u.ID, object, action)
-					if err != nil {
-						response.Error(ctx, response.CodeNoPermission)
-						ctx.Abort()
-						return
-					}
-					if ok {
-						ok = true
-						break
+			MainLoop:
+				for _, role := range getRoles(u.ID) {
+					for _, action := range filter.Action {
+						ok, err = authentication.GetPermission().HasPermissionForRoleInDomain(filter.Domain, role, object, action)
+						if err != nil {
+							response.Error(ctx, response.CodeNoPermission)
+							ctx.Abort()
+							return
+						}
+						if ok {
+							ok = true
+							break MainLoop
+						}
 					}
 				}
 				if !ok {
@@ -234,4 +237,21 @@ func anyToInt64(num any) int64 {
 	default:
 		return 0
 	}
+}
+
+func getRoles(userID string) []string {
+	res := []string{userID}
+	userGroupRelationDB := database.NewMapper(database.GetDB(), &user.Relation{})
+
+	userGroupRelations, err := userGroupRelationDB.List(&user.Relation{
+		UserID: userID,
+	})
+	if err != nil {
+		return res
+	}
+
+	for _, relation := range userGroupRelations {
+		res = append(res, relation.GroupID.String())
+	}
+	return res
 }
