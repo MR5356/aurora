@@ -24,7 +24,7 @@ func NewGithubProvider(conf config.OAuthConfig) *GithubProvider {
 			},
 			ClientID:     conf.ClientId,
 			ClientSecret: conf.ClientSecret,
-			RedirectURL:  config.Current().Server.BaseURL + config.Current().Server.Prefix + "/user/callback?oauth=github",
+			RedirectURL:  config.Current().Server.BaseURL + config.Current().Server.Prefix + "/user/callback?oauth=Github",
 		},
 	}
 }

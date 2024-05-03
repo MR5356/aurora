@@ -43,6 +43,19 @@ func GetOAuthManager() *AuthManager {
 	return manager
 }
 
+type AvailableOAuth struct {
+	OAuth string `json:"oauth" yaml:"oauth"`
+	Type  string `json:"type" yaml:"type"`
+}
+
+func (m *AuthManager) GetAvailableOAuth() []AvailableOAuth {
+	res := make([]AvailableOAuth, 0)
+	for k, v := range m.config {
+		res = append(res, AvailableOAuth{OAuth: k, Type: v.AuthType})
+	}
+	return res
+}
+
 func (m *AuthManager) GetAuthProvider(authName string) (Provider, error) {
 	if conf, ok := m.config[authName]; !ok {
 		return nil, ErrAuthTypeNotSupport

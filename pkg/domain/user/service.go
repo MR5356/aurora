@@ -100,6 +100,11 @@ func (s *Service) GetUserInfo(authType string, code string) (*oauth.UserInfo, er
 	}
 }
 
+// GetAvailableOAuth get available oauth
+func (s *Service) GetAvailableOAuth() []oauth.AvailableOAuth {
+	return oauth.GetOAuthManager().GetAvailableOAuth()
+}
+
 func (s *Service) Initialize() error {
 	if err := database.GetDB().AutoMigrate(&User{}, &Group{}, &Relation{}); err != nil {
 		return err

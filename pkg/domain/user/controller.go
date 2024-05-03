@@ -99,6 +99,16 @@ func (c *Controller) handleCallback(ctx *gin.Context) {
 	}
 }
 
+// @Summary	logout
+// @Tags		user
+// @Success	200	{object}	response.Response
+// @Router		/user/logout [get]
+// @Produce	json
+func (c *Controller) handleLogout(ctx *gin.Context) {
+	ctx.SetCookie("token", "", -1, "", "", false, false)
+	response.Success(ctx, nil)
+}
+
 // @Summary	get user info
 // @Tags		user
 // @Success	200	{object}	response.Response{data=User}
@@ -109,10 +119,19 @@ func (c *Controller) handleUserInfo(ctx *gin.Context) {
 
 	user, err := GetJWTService().ParseToken(token)
 	if err != nil {
-		response.ErrorWithMsg(ctx, response.CodeParamsError, err.Error())
+		response.Success(ctx, nil)
 	} else {
 		response.Success(ctx, user)
 	}
+}
+
+// @Summary	get available oauth
+// @Tags		user
+// @Success	200	{object}	response.Response{data=[]oauth.AvailableOAuth}
+// @Router		/user/oauth/all [get]
+// @Produce	json
+func (c *Controller) handleGetAvailableOauth(ctx *gin.Context) {
+	response.Success(ctx, c.service.GetAvailableOAuth())
 }
 
 func (c *Controller) RegisterRoute(group *gin.RouterGroup) {
@@ -124,9 +143,15 @@ func (c *Controller) RegisterRoute(group *gin.RouterGroup) {
 	// get user info
 	api.GET("/info", c.handleUserInfo)
 
+	// get available oauth
+	api.GET("/oauth/all", c.handleGetAvailableOauth)
+
 	// get oauth url
 	api.GET("/oauth", c.handleGetOauthUrl)
 
 	// callback
 	api.GET("/callback", c.handleCallback)
+
+	// logout
+	api.GET("/logout", c.handleLogout)
 }
