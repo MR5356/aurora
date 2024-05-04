@@ -1,4 +1,4 @@
-package ginmiddleware
+package datafilter
 
 import (
 	"bytes"
@@ -93,7 +93,8 @@ func (w *authedWriter) Write(body []byte) (int, error) {
 			return w.ResponseWriter.Write(errResponse)
 		}
 
-		res.Data = filteredData
+		page.Data = filteredData
+		res.Data = page
 		body, _ = json.Marshal(res)
 		return w.ResponseWriter.Write(body)
 	}
@@ -105,7 +106,7 @@ func AutomationFilter() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		u, err := user.GetJWTService().ParseToken(ginutil.GetToken(ctx))
 		if err != nil {
-			response.Error(ctx, response.CodeNoPermission)
+			response.Error(ctx, response.CodeNotLogin)
 			ctx.Abort()
 			return
 		}

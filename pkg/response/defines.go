@@ -4,12 +4,14 @@ const (
 	CodeSuccess      = "00000"
 	CodeNotFound     = "B0001"
 	CodeParamsError  = "B0002"
-	CodeNoPermission = "B0003"
+	CodeNotLogin     = "B1001"
+	CodeNoPermission = "B1002"
 	CodeServerError  = "A0001"
 
 	MessageSuccess      = "success"
 	MessageNotFound     = "not found"
 	MessageParamsError  = "params error"
+	MessageNotLogin     = "not login"
 	MessageNoPermission = "no permission"
 	MessageServerError  = "server error"
 
@@ -21,6 +23,7 @@ var msgMap = map[string]string{
 	CodeNotFound:     MessageNotFound,
 	CodeParamsError:  MessageParamsError,
 	CodeServerError:  MessageServerError,
+	CodeNotLogin:     MessageNotLogin,
 	CodeNoPermission: MessageNoPermission,
 }
 

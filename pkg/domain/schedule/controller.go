@@ -4,7 +4,7 @@ import (
 	"github.com/MR5356/aurora/pkg/domain/authentication"
 	"github.com/MR5356/aurora/pkg/domain/user"
 	"github.com/MR5356/aurora/pkg/response"
-	"github.com/MR5356/aurora/pkg/server/ginmiddleware"
+	"github.com/MR5356/aurora/pkg/server/ginmiddleware/datafilter"
 	"github.com/MR5356/aurora/pkg/util/ginutil"
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
@@ -55,7 +55,7 @@ func (c *Controller) handleAddSchedule(ctx *gin.Context) {
 // @Tags		schedule
 // @Param		schedule	body		Schedule	true	"schedule info"
 // @Success	200			{object}	response.Response
-// @Router		/schedule [put]
+// @Router		/schedule/{id} [put]
 // @Produce	json
 func (c *Controller) handleUpdateSchedule(ctx *gin.Context) {
 	schedule := new(Schedule)
@@ -165,8 +165,8 @@ func (c *Controller) handleListSchedule(ctx *gin.Context) {
 
 func (c *Controller) RegisterRoute(group *gin.RouterGroup) {
 	api := group.Group("/schedule")
-	api.Use(ginmiddleware.AutomationFilter())
-	ginmiddleware.RegisterFilter([]ginmiddleware.Filter{
+	api.Use(datafilter.AutomationFilter())
+	datafilter.RegisterFilter([]datafilter.Filter{
 		{
 			Function: c.handleDeleteSchedule,
 			IsBefore: true,

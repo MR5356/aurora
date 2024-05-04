@@ -8,6 +8,7 @@ import (
 	"github.com/MR5356/aurora/docs"
 	"github.com/MR5356/aurora/pkg/config"
 	"github.com/MR5356/aurora/pkg/domain/schedule"
+	"github.com/MR5356/aurora/pkg/domain/system"
 	"github.com/MR5356/aurora/pkg/domain/user"
 	"github.com/MR5356/aurora/pkg/domain/user/oauth"
 	_ "github.com/MR5356/aurora/pkg/log"
@@ -87,6 +88,7 @@ func New(cfg *config.Config) (server *Server, err error) {
 	services := []Service{
 		schedule.GetService(),
 		user.GetService(),
+		system.GetService(),
 	}
 
 	for _, svc := range services {
@@ -99,6 +101,7 @@ func New(cfg *config.Config) (server *Server, err error) {
 	controllers := []Controller{
 		schedule.NewController(),
 		user.NewController(),
+		system.NewController(),
 	}
 
 	for _, ctl := range controllers {

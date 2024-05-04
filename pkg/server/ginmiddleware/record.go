@@ -2,9 +2,13 @@ package ginmiddleware
 
 import (
 	"fmt"
+	"github.com/MR5356/aurora/pkg/domain/system"
+	"github.com/MR5356/aurora/pkg/domain/user"
+	"github.com/MR5356/aurora/pkg/util/ginutil"
 	"github.com/gin-gonic/gin"
 	"github.com/sirupsen/logrus"
 	"net/http"
+	"strconv"
 	"time"
 )
 
@@ -40,6 +44,28 @@ func Record() gin.HandlerFunc {
 				default:
 					entry.Info(msg)
 				}
+			}
+
+			token := ginutil.GetToken(ctx)
+
+			var uid string
+			u, err := user.GetJWTService().ParseToken(token)
+			if err == nil {
+				uid = u.ID
+			}
+
+			err = system.GetService().InsertRecord(&system.Record{
+				UserID:    uid,
+				Path:      path,
+				Method:    method,
+				Code:      strconv.Itoa(httpCode),
+				ClientIP:  clientIP,
+				UserAgent: clientUA,
+				Cost:      cost,
+			})
+
+			if err != nil {
+				logrus.Errorf("insert record failed, error: %v", err)
 			}
 		}()
 

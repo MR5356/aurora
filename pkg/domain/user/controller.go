@@ -75,20 +75,20 @@ func (c *Controller) handleCallback(ctx *gin.Context) {
 			if !ok {
 				redirectURL = "/"
 			}
-			userinfo, err := c.service.GetUserInfo(oAuthName, code)
-			if err != nil {
-				response.ErrorWithMsg(ctx, response.CodeParamsError, err.Error())
-				return
-			}
-			user := new(User)
-			user.ID = userinfo.ID
-			user.Username = userinfo.Username
-			user.Nickname = userinfo.Nickname
-			user.Email = userinfo.Email
-			user.Phone = userinfo.Phone
-			user.Avatar = userinfo.Avatar
+			//userinfo, err := c.service.GetOAuthUserInfo(oAuthName, code)
+			//if err != nil {
+			//	response.ErrorWithMsg(ctx, response.CodeParamsError, err.Error())
+			//	return
+			//}
+			//user := new(User)
+			//user.ID = userinfo.ID
+			//user.Username = userinfo.Username
+			//user.Nickname = userinfo.Nickname
+			//user.Email = userinfo.Email
+			//user.Phone = userinfo.Phone
+			//user.Avatar = userinfo.Avatar
 
-			token, err := GetJWTService().CreateToken(user)
+			token, err := c.service.GetOAuthToken(oAuthName, code)
 			if err != nil {
 				response.ErrorWithMsg(ctx, response.CodeParamsError, err.Error())
 				return

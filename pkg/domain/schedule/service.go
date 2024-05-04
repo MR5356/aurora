@@ -228,6 +228,14 @@ func (s *Service) Initialize() (err error) {
 		return &TestTask{}
 	}); err != nil {
 		logrus.Errorf("register test task failed, error: %v", err)
+		return err
+	}
+
+	if err := GetExecutorManager().Register(Executor{Name: "test-chinese", DisplayName: "测试执行器"}, func() Task {
+		return &TestTask{}
+	}); err != nil {
+		logrus.Errorf("register test task failed, error: %v", err)
+		return err
 	}
 
 	if err = eventbus.GetEventBus().Subscribe(topicAddCronTask, s.addCronTask); err != nil {

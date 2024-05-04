@@ -23,7 +23,9 @@ func (u *User) TableName() string {
 }
 
 func (u *User) BeforeCreate(tx *gorm.DB) error {
-	u.ID = uuid.New().String()
+	if len(u.ID) == 0 {
+		u.ID = uuid.New().String()
+	}
 	return nil
 }
 

@@ -92,12 +92,49 @@ func (s *Service) GetOAuthURL(authType string, redirectURL string) (string, erro
 }
 
 // GetUserInfo get user info
-func (s *Service) GetUserInfo(authType string, code string) (*oauth.UserInfo, error) {
+func (s *Service) GetOAuthUserInfo(authType string, code string) (*oauth.UserInfo, error) {
 	if provider, err := oauth.GetOAuthManager().GetAuthProvider(authType); err != nil {
 		return nil, err
 	} else {
 		return provider.GetInfo(code)
 	}
+}
+
+func (s *Service) GetOAuthToken(authType string, code string) (token string, err error) {
+	userinfo, err := s.GetOAuthUserInfo(authType, code)
+	if err != nil {
+		return "", err
+	}
+
+	user := new(User)
+	user.ID = userinfo.ID
+	user.Username = userinfo.Username
+	user.Nickname = userinfo.Nickname
+	user.Email = userinfo.Email
+	user.Phone = userinfo.Phone
+	user.Avatar = userinfo.Avatar
+
+	_, err = s.userDB.Detail(&User{ID: user.ID})
+	if err != nil {
+		err = s.userDB.Insert(user)
+		if err != nil {
+			logrus.Errorf("insert user failed, error: %v", err)
+			return "", err
+		}
+	} else {
+		err = s.userDB.Update(&User{ID: user.ID}, structutil.Struct2Map(user))
+		if err != nil {
+			logrus.Errorf("update user failed, error: %v", err)
+			return "", err
+		}
+	}
+
+	u, err := s.userDB.Detail(&User{ID: user.ID})
+	if err != nil {
+		return "", err
+	}
+
+	return GetJWTService().CreateToken(u)
 }
 
 // GetAvailableOAuth get available oauth
