@@ -43,12 +43,17 @@ doc:  ## Generate documentation
 deps: doc  ## Install dependencies
 	go get -d -v -t ./...
 
+.PHONY: static
+static: clean  ## Build frontend
+	cd frontend && yarn && yarn build-only && cd ..
+	cp -r ./frontend/dist/* pkg/server/static
+
 .PHONY: build
-build: clean deps  ## Build the binary
+build: clean deps static  ## Build the binary
 	go build -ldflags $(GO_FLAGS) -o $(BIN_DIR)/aurora ./cmd/aurora
 
 .PHONY: release
-release: clean deps  ## Build and release the binary
+release: clean deps static  ## Build and release the binary
 	chmod +x hack/release.sh
 	./hack/release.sh $(NAME) $(GO_FLAGS) $(OUT_DIR)
 
@@ -63,4 +68,5 @@ docker:  ## Build docker image
 
 .PHONY: clean
 clean:  ## Clean build artifacts
+	find ./pkg/server/static/* | grep -v robots.txt | xargs rm -rf
 	rm -rf $(OUT_DIR)
