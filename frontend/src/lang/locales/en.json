@@ -1,0 +1,56 @@
+{
+  "language": "Language",
+  "search": "Search",
+  "signIn": "Sign in",
+  "signWithGithub": "Continue with Github",
+  "signWithGitlab": "Continue with Gitlab",
+  "needLogin": "continue with your account",
+  "signInNote": "By continuing, you agree to our Terms of Service and Privacy Policy.",
+  "navigation": {
+    "dashboard": "Dashboard",
+    "setting": "Setting",
+    "schedule": "Schedule",
+    "notification": "Notification",
+    "scm": "Code Management",
+    "pipeline": "Pipeline",
+    "package": "Package Management"
+  },
+  "tips": "Tips",
+  "close": "Close",
+  "confirm": "Confirm",
+  "save": "Save",
+  "cancel": "Cancel",
+  "confirmLogout": "Are you sure you want to log out?",
+  "confirmDelete": "Are you sure you want to delete?",
+  "schedule": {
+    "id": "ID",
+    "title": "Title",
+    "desc": "Desc",
+    "cronString": "Cron",
+    "enabled": "Enabled",
+    "true": "Y",
+    "false": "N",
+    "nextTime": "Next Time",
+    "params": "Params",
+    "executor": "Executor",
+    "createdAt": "createdAt",
+    "editTitle": "Edit",
+    "detailTitle": "Detail"
+  },
+  "table": {
+    "emptyText": "No Data",
+    "searchPlaceholder": "Type to search",
+    "operations": "Ops",
+    "edit": "Edit",
+    "detail": "Detail",
+    "delete": "Delete"
+  },
+  "statistic": {
+    "user": "Number of user",
+    "schedule": "Number of schedule",
+    "record": "Number of visits"
+  },
+  "404": {
+    "message": "Page not found"
+  }
+}

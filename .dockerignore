@@ -12,6 +12,10 @@
 
 # 版本控制元数据
 .gitignore
+frontend/node_modules
+frontend/.idea
+frontend/.vscode
+frontend/dist
 
 # 构建制品
 bin/*

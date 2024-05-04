@@ -1,0 +1,56 @@
+{
+  "language": "语言",
+  "search": "搜索",
+  "signIn": "登录",
+  "signWithGithub": "使用 Github 登录",
+  "signWithGitlab": "使用 Gitlab 登录",
+  "needLogin": "登录后继续",
+  "signInNote": "继续使用即表示您同意我们的服务条款和隐私政策。",
+  "navigation": {
+    "dashboard": "工作台",
+    "setting": "系统设置",
+    "schedule": "计划任务",
+    "notification": "通知设置",
+    "scm": "代码管理",
+    "pipeline": "流水线",
+    "package": "制品仓库"
+  },
+  "tips": "提示",
+  "close": "关闭",
+  "confirm": "确定",
+  "save": "保存",
+  "cancel": "取消",
+  "confirmLogout": "确定退出登录吗?",
+  "confirmDelete": "确定删除吗?",
+  "schedule": {
+    "id": "ID",
+    "title": "名称",
+    "desc": "描述",
+    "cronString": "定时表达式",
+    "enabled": "启用",
+    "true": "是",
+    "false": "否",
+    "nextTime": "下次执行时间",
+    "params": "参数",
+    "executor": "执行器",
+    "createdAt": "创建时间",
+    "editTitle": "编辑",
+    "detailTitle": "查看"
+  },
+  "table": {
+    "emptyText": "没有数据",
+    "searchPlaceholder": "输入要搜索的内容",
+    "operations": "操作",
+    "edit": "编辑",
+    "detail": "详情",
+    "delete": "删除"
+  },
+  "statistic": {
+    "user": "用户数量",
+    "schedule": "计划任务",
+    "record": "访问次数"
+  },
+  "404": {
+    "message": "明明记得藏财宝的地方就在这片海滩<br />怎么一下子消失得无影无踪<br /><br />还是换个地方继续寻找吧"
+  }
+}
