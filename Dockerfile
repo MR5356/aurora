@@ -27,5 +27,5 @@ FROM alpine:3.19
 WORKDIR /app
 COPY --from=builder /build/_output/bin/aurora /app/
 
-EXPOSE 80
+EXPOSE 8080
 ENTRYPOINT ["/app/aurora"]
