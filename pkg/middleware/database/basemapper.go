@@ -49,7 +49,7 @@ func (m *BaseMapper[T]) List(entity T, order ...string) (res []T, err error) {
 }
 
 func (m *BaseMapper[T]) Count(entity T) (count int64, err error) {
-	err = m.DB.Model(entity).Count(&count).Error
+	err = m.DB.Model(entity).Where(entity).Count(&count).Error
 	return
 }
 

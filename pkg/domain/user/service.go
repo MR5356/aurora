@@ -1,13 +1,17 @@
 package user
 
 import (
+	"fmt"
 	"github.com/MR5356/aurora/pkg/domain/authentication"
+	"github.com/MR5356/aurora/pkg/domain/notify"
 	"github.com/MR5356/aurora/pkg/domain/user/oauth"
 	"github.com/MR5356/aurora/pkg/middleware/database"
+	"github.com/MR5356/aurora/pkg/middleware/eventbus"
 	"github.com/MR5356/aurora/pkg/util/structutil"
 	"github.com/MR5356/aurora/pkg/util/validate"
 	"github.com/sirupsen/logrus"
 	"sync"
+	"time"
 )
 
 var (
@@ -132,6 +136,20 @@ func (s *Service) GetOAuthToken(authType string, code string) (token string, err
 	u, err := s.userDB.Detail(&User{ID: user.ID})
 	if err != nil {
 		return "", err
+	}
+
+	if err = eventbus.GetEventBus().Publish(notify.TopicSendMessage, &notify.MessageTemplate{
+		Event:   notify.EventLogin,
+		Subject: "登录通知",
+		Body:    fmt.Sprintf("您好，%s，您在%s登录成功，欢迎您。", u.Nickname, time.Now().Format(time.DateTime)),
+		Level:   "info",
+
+		Receivers: notify.MessageReceiver{
+			Receivers: []string{u.Email},
+			Type:      "email",
+		},
+	}); err != nil {
+		logrus.Errorf("publish message failed, error: %v", err)
 	}
 
 	return GetJWTService().CreateToken(u)

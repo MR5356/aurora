@@ -93,6 +93,7 @@ func (c *Controller) handleCallback(ctx *gin.Context) {
 				response.ErrorWithMsg(ctx, response.CodeParamsError, err.Error())
 				return
 			}
+
 			ctx.SetCookie("token", token, int(config.Current().JWT.Expire.Seconds()), "", "", false, false)
 			ctx.Redirect(http.StatusTemporaryRedirect, redirectURL)
 		}
