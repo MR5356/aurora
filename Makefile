@@ -49,7 +49,7 @@ static: clean  ## Build frontend
 	cp -r ./frontend/dist/* pkg/server/static
 
 .PHONY: build
-build: clean deps  ## Build the binary
+build: deps  ## Build the binary
 	go build -ldflags $(GO_FLAGS) -o $(BIN_DIR)/aurora ./cmd/aurora
 
 .PHONY: release
