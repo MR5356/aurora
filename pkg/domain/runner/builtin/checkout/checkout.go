@@ -6,7 +6,7 @@ import (
 )
 
 type CheckoutTask struct {
-	//shared.UnimplementedITask
+	shared.UnimplementedITask
 }
 
 func (t *CheckoutTask) GetInfo() *proto.TaskInfo {

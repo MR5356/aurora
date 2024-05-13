@@ -7,7 +7,7 @@ MODULE_NAME = github.com/MR5356/aurora
 IMAGE_REGISTRY ?= toodo/aurora
 TARGET_PLATFORM ?= linux/arm64,linux/amd64
 
-VERSION ?= $(shell git describe --tags --abbrev=0 2>/dev/null)
+VERSION ?= $(shell git describe --tags 2>/dev/null)
 
 # if git describe error
 ifneq ($(VERSION),)

@@ -55,7 +55,7 @@ func (c *Controller) handleRegisterPlugin(ctx *gin.Context) {
 		response.Error(ctx, response.CodeParamsError)
 		return
 	}
-	response.Success(ctx, p.GetInfo())
+	response.Success(ctx, p.GetTask().GetInfo())
 }
 
 func (c *Controller) handleRunner(ctx *gin.Context) {
