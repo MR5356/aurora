@@ -44,6 +44,7 @@ type Server struct {
 	Prefix      string `json:"prefix" yaml:"prefix" default:"/api/v1"`
 	Debug       bool   `json:"debug" yaml:"debug" default:"false"`
 	GracePeriod int    `json:"gracePeriod" yaml:"gracePeriod" default:"30"`
+	PluginPath  string `json:"pluginPath" yaml:"pluginPath" default:"./_plugins"`
 }
 
 type Email struct {

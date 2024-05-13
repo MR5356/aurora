@@ -15,6 +15,8 @@ require (
 	github.com/golang-jwt/jwt/v5 v5.2.1
 	github.com/google/go-github/v61 v61.0.0
 	github.com/google/uuid v1.6.0
+	github.com/gorilla/websocket v1.5.1
+	github.com/hashicorp/go-plugin v1.6.0
 	github.com/mcuadros/go-defaults v1.2.0
 	github.com/prometheus/client_golang v1.19.0
 	github.com/robfig/cron/v3 v3.0.1
@@ -42,6 +44,7 @@ require (
 	github.com/cespare/xxhash/v2 v2.2.0 // indirect
 	github.com/chenzhuoyu/base64x v0.0.0-20221115062448-fe3a3abad311 // indirect
 	github.com/dustin/go-humanize v1.0.1 // indirect
+	github.com/fatih/color v1.7.0 // indirect
 	github.com/gabriel-vasile/mimetype v1.4.2 // indirect
 	github.com/gin-contrib/sse v0.1.0 // indirect
 	github.com/glebarez/go-sqlite v1.21.2 // indirect
@@ -56,7 +59,9 @@ require (
 	github.com/golang/protobuf v1.5.3 // indirect
 	github.com/google/go-querystring v1.1.0 // indirect
 	github.com/hashicorp/go-cleanhttp v0.5.2 // indirect
+	github.com/hashicorp/go-hclog v0.14.1 // indirect
 	github.com/hashicorp/go-retryablehttp v0.7.2 // indirect
+	github.com/hashicorp/yamux v0.1.1 // indirect
 	github.com/inconshreveable/mousetrap v1.1.0 // indirect
 	github.com/jackc/pgpassfile v1.0.0 // indirect
 	github.com/jackc/pgservicefile v0.0.0-20221227161230-091c0ba34f0a // indirect
@@ -68,10 +73,13 @@ require (
 	github.com/klauspost/cpuid/v2 v2.2.4 // indirect
 	github.com/leodido/go-urn v1.2.4 // indirect
 	github.com/mailru/easyjson v0.7.6 // indirect
+	github.com/mattn/go-colorable v0.1.4 // indirect
 	github.com/mattn/go-isatty v0.0.19 // indirect
 	github.com/microsoft/go-mssqldb v1.6.0 // indirect
+	github.com/mitchellh/go-testing-interface v0.0.0-20171004221916-a61a99592b77 // indirect
 	github.com/modern-go/concurrent v0.0.0-20180306012644-bacd9c7ef1dd // indirect
 	github.com/modern-go/reflect2 v1.0.2 // indirect
+	github.com/oklog/run v1.0.0 // indirect
 	github.com/pelletier/go-toml/v2 v2.0.8 // indirect
 	github.com/prometheus/client_model v0.5.0 // indirect
 	github.com/prometheus/common v0.48.0 // indirect
@@ -88,6 +96,8 @@ require (
 	golang.org/x/time v0.3.0 // indirect
 	golang.org/x/tools v0.7.0 // indirect
 	google.golang.org/appengine v1.6.7 // indirect
+	google.golang.org/genproto v0.0.0-20200526211855-cb27e3aa2013 // indirect
+	google.golang.org/grpc v1.38.0 // indirect
 	google.golang.org/protobuf v1.32.0 // indirect
 	gopkg.in/alexcesaro/quotedprintable.v3 v3.0.0-20150716171945-2caba252f4dc // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect

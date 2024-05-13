@@ -1,0 +1,46 @@
+syntax = "proto3";
+package proto;
+option go_package = "./proto";
+
+service ITask {
+  rpc GetInfo(Empty) returns (TaskInfo);
+  rpc GetParams(Empty) returns (TaskParams);
+  rpc SetParams(TaskParams) returns (Empty);
+  rpc Start(Empty) returns (Empty);
+  rpc Stop(Empty) returns (Empty);
+  rpc Pause(Empty) returns (Empty);
+  rpc Resume(Empty) returns (Empty);
+}
+
+message Empty {}
+
+message TaskParams {
+  repeated TaskParam params = 1;
+}
+
+message TaskInfo {
+  string label = 1;
+  string abstract = 2;
+  string author = 3;
+  string download_url = 4;
+  string project_url = 5;
+  string icon = 6;
+  string version = 7;
+  string usage = 8;
+}
+
+message TaskParam {
+  string title = 1;
+  string placeholder = 2;
+  int32 order = 3;
+  string type = 4;
+  bool required = 5;
+  string key = 6;
+  string value = 7;
+  repeated Candidate candidate = 8;
+}
+
+message Candidate {
+  string display_name = 1;
+  string value = 2;
+}

@@ -8,6 +8,7 @@ import (
 	"github.com/MR5356/aurora/docs"
 	"github.com/MR5356/aurora/pkg/config"
 	"github.com/MR5356/aurora/pkg/domain/notify"
+	"github.com/MR5356/aurora/pkg/domain/runner"
 	"github.com/MR5356/aurora/pkg/domain/schedule"
 	"github.com/MR5356/aurora/pkg/domain/system"
 	"github.com/MR5356/aurora/pkg/domain/user"
@@ -48,6 +49,8 @@ func New(cfg *config.Config) (server *Server, err error) {
 	} else {
 		gin.SetMode(gin.ReleaseMode)
 	}
+
+	os.MkdirAll(cfg.Server.PluginPath, os.ModePerm)
 
 	// init middleware
 	oauth.NewOAuthManager(cfg)
@@ -105,6 +108,7 @@ func New(cfg *config.Config) (server *Server, err error) {
 		user.NewController(),
 		system.NewController(),
 		notify.NewController(),
+		runner.NewController(),
 	}
 
 	for _, ctl := range controllers {
