@@ -79,3 +79,11 @@ func (u *UnimplementedITask) Pause() error {
 func (u *UnimplementedITask) Resume() error {
 	return errors.New("method Resume not implemented")
 }
+
+func (u *UnimplementedITask) GetWorkflow() *Workflow {
+	return nil
+}
+
+func (u *UnimplementedITask) DryRun() error {
+	return nil
+}
