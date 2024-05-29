@@ -27,10 +27,16 @@ func (m *BaseMapper[T]) Insert(entity T, db ...*gorm.DB) error {
 }
 
 func (m *BaseMapper[T]) Delete(entity T, db ...*gorm.DB) error {
+	if len(db) > 0 {
+		return db[0].Delete(entity).Error
+	}
 	return m.DB.Delete(entity).Error
 }
 
 func (m *BaseMapper[T]) Update(entity T, fields map[string]interface{}, db ...*gorm.DB) error {
+	if len(db) > 0 {
+		return db[0].Model(entity).Where(entity).Updates(fields).Error
+	}
 	return m.DB.Model(entity).Where(entity).Updates(fields).Error
 }
 

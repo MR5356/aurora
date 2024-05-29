@@ -8,7 +8,7 @@ import (
 	"github.com/MR5356/aurora/docs"
 	"github.com/MR5356/aurora/pkg/config"
 	"github.com/MR5356/aurora/pkg/domain/notify"
-	"github.com/MR5356/aurora/pkg/domain/runner"
+	"github.com/MR5356/aurora/pkg/domain/pipeline"
 	"github.com/MR5356/aurora/pkg/domain/schedule"
 	"github.com/MR5356/aurora/pkg/domain/system"
 	"github.com/MR5356/aurora/pkg/domain/user"
@@ -94,6 +94,7 @@ func New(cfg *config.Config) (server *Server, err error) {
 		user.GetService(),
 		system.GetService(),
 		notify.GetService(),
+		pipeline.GetService(),
 	}
 
 	for _, svc := range services {
@@ -108,7 +109,7 @@ func New(cfg *config.Config) (server *Server, err error) {
 		user.NewController(),
 		system.NewController(),
 		notify.NewController(),
-		runner.NewController(),
+		pipeline.NewController(),
 	}
 
 	for _, ctl := range controllers {
