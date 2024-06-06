@@ -89,10 +89,28 @@ func (c *Controller) handleGetWorkflow(ctx *gin.Context) {
 	}
 }
 
+// @Summary	delete workflow
+// @Tags		pipeline
+// @Param		id	path		string	true	"workflow id"
+// @Success	200	{object}	response.Response
+// @Router		/pipeline/workflow/{id} [delete]
+// @Produce	json
+func (c *Controller) handleDeleteWorkflow(ctx *gin.Context) {
+	id := ctx.Param("id")
+
+	err := c.service.DeleteWorkflow(&Workflow{ID: id})
+	if err != nil {
+		response.ErrorWithMsg(ctx, response.CodeServerError, err.Error())
+	} else {
+		response.Success(ctx, nil)
+	}
+}
+
 func (c *Controller) RegisterRoute(group *gin.RouterGroup) {
 	api := group.Group("/pipeline")
 	api.GET("/workflow", c.handleListWorkflow)
 	api.POST("/workflow", c.handleAddWorkflow)
 	api.PUT("/workflow", c.handleUpdateWorkflow)
 	api.GET("/workflow/:id", c.handleGetWorkflow)
+	api.DELETE("/workflow/:id", c.handleDeleteWorkflow)
 }

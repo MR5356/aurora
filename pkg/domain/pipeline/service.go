@@ -127,6 +127,28 @@ func (s *Service) UpdateWorkflow(wf *WorkflowRequest) error {
 	return nil
 }
 
+func (s *Service) DeleteWorkflow(wf *Workflow) error {
+	tx := database.GetDB().Begin()
+	defer tx.Rollback()
+
+	if err := tx.Where("workflow_id = ?", wf.ID).Delete(&Nodes{}).Error; err != nil {
+		logrus.Errorf("delete node failed, error: %v", err)
+		return err
+	}
+
+	if err := tx.Where("workflow_id = ?", wf.ID).Delete(&Edges{}).Error; err != nil {
+		logrus.Errorf("delete edge failed, error: %v", err)
+		return err
+	}
+
+	if err := s.wfDB.Delete(&Workflow{ID: wf.ID}, tx); err != nil {
+		logrus.Errorf("delete workflow failed, error: %v", err)
+		return err
+	}
+	tx.Commit()
+	return nil
+}
+
 func (s *Service) GetWorkflow(wf *Workflow) (*WorkflowRequest, error) {
 	wf, err := s.wfDB.Detail(&Workflow{ID: wf.ID})
 	if err != nil {
