@@ -50,7 +50,7 @@ func NewAuroraCommand() *cobra.Command {
 
 	cmd.PersistentFlags().StringVarP(&configFile, "config", "c", "", "config file")
 	cmd.PersistentFlags().BoolVarP(&debug, "debug", "d", false, "enable debug mode")
-	cmd.PersistentFlags().IntVarP(&port, "port", "p", 80, "server port")
+	cmd.PersistentFlags().IntVarP(&port, "port", "p", 8080, "server port")
 	cmd.PersistentFlags().StringVar(&dbDriver, "dbDriver", "sqlite", "database driver")
 	cmd.PersistentFlags().StringVar(&dbDSN, "dbDSN", "db.sqlite", "database DSN")
 

@@ -60,6 +60,7 @@ func (c *Controller) handleAddSchedule(ctx *gin.Context) {
 func (c *Controller) handleUpdateSchedule(ctx *gin.Context) {
 	schedule := new(Schedule)
 	if err := ctx.ShouldBindJSON(schedule); err != nil {
+		logrus.Errorf("bind json failed, error: %v", err)
 		response.Error(ctx, response.CodeParamsError)
 		return
 	}
@@ -163,12 +164,90 @@ func (c *Controller) handleListSchedule(ctx *gin.Context) {
 	}
 }
 
+// @Summary	batch delete schedule
+// @Tags		schedule
+// @Param		ids	body		[]uuid.UUID	true	"schedule ids"
+// @Success	200	{object}	response.Response
+// @Router		/schedule/batch/delete [put]
+// @Produce	json
+func (c *Controller) handleBatchDeleteSchedule(ctx *gin.Context) {
+	ids := make([]uuid.UUID, 0)
+
+	if err := ctx.ShouldBindJSON(&ids); err != nil {
+		response.Error(ctx, response.CodeParamsError)
+		return
+	}
+	if err := c.service.BatchDeleteSchedule(ids); err != nil {
+		response.ErrorWithMsg(ctx, response.CodeServerError, err.Error())
+	} else {
+		response.Success(ctx, nil)
+	}
+}
+
+// @Summary	batch enable schedule
+// @Tags		schedule
+// @Param		ids	body		[]uuid.UUID	true	"schedule ids"
+// @Success	200	{object}	response.Response
+// @Router		/schedule/batch/enable [delete]
+// @Produce	json
+func (c *Controller) handleBatchEnableSchedule(ctx *gin.Context) {
+	ids := make([]uuid.UUID, 0)
+
+	if err := ctx.ShouldBindJSON(&ids); err != nil {
+		response.Error(ctx, response.CodeParamsError)
+		return
+	}
+	if err := c.service.BatchSetScheduleEnable(ids, true); err != nil {
+		response.ErrorWithMsg(ctx, response.CodeServerError, err.Error())
+	} else {
+		response.Success(ctx, nil)
+	}
+}
+
+// @Summary	batch enable schedule
+// @Tags		schedule
+// @Param		ids	body		[]uuid.UUID	true	"schedule ids"
+// @Success	200	{object}	response.Response
+// @Router		/schedule/batch/disable [delete]
+// @Produce	json
+func (c *Controller) handleBatchDisableSchedule(ctx *gin.Context) {
+	ids := make([]uuid.UUID, 0)
+
+	if err := ctx.ShouldBindJSON(&ids); err != nil {
+		response.Error(ctx, response.CodeParamsError)
+		return
+	}
+	if err := c.service.BatchSetScheduleEnable(ids, false); err != nil {
+		response.ErrorWithMsg(ctx, response.CodeServerError, err.Error())
+	} else {
+		response.Success(ctx, nil)
+	}
+}
+
 func (c *Controller) RegisterRoute(group *gin.RouterGroup) {
 	api := group.Group("/schedule")
 	api.Use(datafilter.AutomationFilter())
 	datafilter.RegisterFilter([]datafilter.Filter{
 		{
 			Function: c.handleDeleteSchedule,
+			IsBefore: true,
+			Action:   []string{ActionAdmin, ActionOwner},
+			Domain:   AuthDomain,
+		},
+		{
+			Function: c.handleBatchDeleteSchedule,
+			IsBefore: true,
+			Action:   []string{ActionAdmin, ActionOwner},
+			Domain:   AuthDomain,
+		},
+		{
+			Function: c.handleBatchEnableSchedule,
+			IsBefore: true,
+			Action:   []string{ActionAdmin, ActionOwner},
+			Domain:   AuthDomain,
+		},
+		{
+			Function: c.handleBatchDisableSchedule,
 			IsBefore: true,
 			Action:   []string{ActionAdmin, ActionOwner},
 			Domain:   AuthDomain,
@@ -197,12 +276,12 @@ func (c *Controller) RegisterRoute(group *gin.RouterGroup) {
 			Action:   []string{ActionAdmin, ActionOwner, ActionUser},
 			Domain:   AuthDomain,
 		},
-		{
-			Function: c.handlePageScheduleRecord,
-			IsBefore: false,
-			Action:   []string{ActionAdmin, ActionOwner, ActionUser},
-			Domain:   AuthDomain,
-		},
+		//{
+		//	Function: c.handlePageScheduleRecord,
+		//	IsBefore: false,
+		//	Action:   []string{ActionAdmin, ActionOwner, ActionUser},
+		//	Domain:   AuthDomain,
+		//},
 	})
 
 	// list schedule
@@ -222,6 +301,15 @@ func (c *Controller) RegisterRoute(group *gin.RouterGroup) {
 
 	// delete schedule
 	api.DELETE("/:id", c.handleDeleteSchedule)
+
+	// batch delete schedule
+	api.PUT("/batch/delete", c.handleBatchDeleteSchedule)
+
+	// batch enable schedule
+	api.PUT("/batch/enable", c.handleBatchEnableSchedule)
+
+	// batch disable schedule
+	api.PUT("/batch/disable", c.handleBatchDisableSchedule)
 
 	// page schedule record
 	api.GET("/record/page", c.handlePageScheduleRecord)

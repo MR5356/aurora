@@ -10,7 +10,9 @@ import (
 	"github.com/MR5356/aurora/pkg/util/ginutil"
 	"github.com/MR5356/aurora/pkg/util/structutil"
 	"github.com/gin-gonic/gin"
+	"github.com/google/uuid"
 	"github.com/sirupsen/logrus"
+	"io"
 	"reflect"
 	"sync"
 )
@@ -87,7 +89,7 @@ func (w *authedWriter) Write(body []byte) (int, error) {
 
 	page, ok := isPage(res.Data.(map[string]any))
 	if ok {
-		logrus.Debugf("page: %+v", page)
+		//logrus.Debugf("page: %+v", page)
 		filteredData, err := authentication.GetPermission().FilterDataArray(page.Data, w.filter.Action, w.filter.Domain, getRoles(w.user.ID), w.filter.FiledName)
 		if err != nil {
 			return w.ResponseWriter.Write(errResponse)
@@ -127,35 +129,47 @@ func AutomationFilter() gin.HandlerFunc {
 			} else {
 				var object string
 
+				// path id or query id
 				object = ctx.Param(filter.FiledName)
 				if len(object) == 0 {
 					object = ctx.Query(filter.FiledName)
 				}
 
-				logrus.Debugf("filter: %d, object: %s", filterKey, object)
-				if len(object) == 0 {
-					response.Error(ctx, response.CodeNoPermission)
-					ctx.Abort()
-					return
+				// body ids
+				ids := make([]uuid.UUID, 0)
+				// read and set body
+				body, err := io.ReadAll(ctx.Request.Body)
+				if err == nil {
+					err = json.Unmarshal(body, &ids)
+					if err == nil {
+						logrus.Debugf("not body ids")
+					}
+					ctx.Request.Body = io.NopCloser(bytes.NewBuffer(body))
 				}
 
-				ok = false
-			MainLoop:
-				for _, role := range getRoles(u.ID) {
-					for _, action := range filter.Action {
-						ok, err = authentication.GetPermission().HasPermissionForRoleInDomain(filter.Domain, role, object, action)
-						if err != nil {
+				logrus.Debugf("filter: %d, object: %s, ids: %+v", filterKey, object, ids)
+				if len(object) != 0 {
+					logrus.Debugf("path id or query id: %s", object)
+					ok, err = checkObjectPermission(u, object, filter)
+
+					logrus.Debugf("checkObjectPermission: %v, %v", ok, err)
+					if err != nil || !ok {
+						response.Error(ctx, response.CodeNoPermission)
+						ctx.Abort()
+						return
+					}
+				} else if len(ids) > 0 {
+					logrus.Debugf("body ids: %+v", ids)
+					for _, id := range ids {
+						ok, err = checkObjectPermission(u, id.String(), filter)
+						logrus.Debugf("checkObjectPermission: %v, %v", ok, err)
+						if err != nil || !ok {
 							response.Error(ctx, response.CodeNoPermission)
 							ctx.Abort()
 							return
 						}
-						if ok {
-							ok = true
-							break MainLoop
-						}
 					}
-				}
-				if !ok {
+				} else {
 					response.Error(ctx, response.CodeNoPermission)
 					ctx.Abort()
 					return
@@ -164,6 +178,25 @@ func AutomationFilter() gin.HandlerFunc {
 		}
 		ctx.Next()
 	}
+}
+
+func checkObjectPermission(u *user.User, object string, filter Filter) (ok bool, err error) {
+	// check path id or query id
+	ok = false
+MainLoop:
+	for _, role := range getRoles(u.ID) {
+		for _, action := range filter.Action {
+			ok, err = authentication.GetPermission().HasPermissionForRoleInDomain(filter.Domain, role, object, action)
+			if err != nil {
+				return false, err
+			}
+			if ok {
+				ok = true
+				break MainLoop
+			}
+		}
+	}
+	return ok, nil
 }
 
 func isArrayOrSlice(data any) bool {
@@ -183,7 +216,7 @@ func isPage(data map[string]interface{}) (database.Pager[any], bool) {
 		return database.Pager[any]{}, false
 	}
 
-	logrus.Debugf("data: %+v", data)
+	//logrus.Debugf("data: %+v", data)
 	c, ok := structutil.GetMapFiledByName(data, "current")
 	if !ok {
 		return database.Pager[any]{}, false

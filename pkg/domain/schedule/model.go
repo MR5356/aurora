@@ -34,7 +34,7 @@ type Record struct {
 	ID         uuid.UUID `json:"id" gorm:"primary_key;type:uuid;" swaggerignore:"true"`
 	ScheduleID uuid.UUID `json:"scheduleID" gorm:"type:uuid;"`
 	Title      string    `json:"title" validate:"required"`
-	TaskName   string    `json:"taskName" validate:"required"`
+	Executor   string    `json:"executor" validate:"required"`
 	Params     string    `json:"params"`
 	Status     string    `json:"status"`
 

@@ -24,6 +24,9 @@ __*
 /_output*/
 /_output
 
+# plugins
+_plugins
+
 # Emacs save files
 *~
 \#*\#

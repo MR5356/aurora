@@ -2,6 +2,7 @@ package schedule
 
 import (
 	"encoding/json"
+	"fmt"
 	"github.com/MR5356/aurora/pkg/middleware/database"
 	"github.com/MR5356/aurora/pkg/middleware/eventbus"
 	"github.com/MR5356/aurora/pkg/util/structutil"
@@ -201,6 +202,80 @@ func (s *Service) verifyTaskParams(schedule *Schedule) error {
 	if _, err := parser.Parse("*/5 * * * * *"); err != nil {
 		return err
 	}
+	return nil
+}
+
+// BatchSetScheduleEnable batch set schedule enable
+func (s *Service) BatchSetScheduleEnable(ids []uuid.UUID, enabled bool) error {
+	schedules := make([]*Schedule, 0)
+	for _, id := range ids {
+		schedules = append(schedules, &Schedule{ID: id, Enabled: true})
+	}
+	tx := s.scheduleDB.DB.Begin()
+	defer tx.Rollback()
+	err := s.scheduleDB.DB.Model(&Schedule{}).Where("id IN ?", ids).Updates(map[string]interface{}{"enabled": enabled}).Error
+
+	if err != nil {
+		logrus.Errorf("batch enable schedule failed, error: %v", err)
+		return err
+	}
+
+	for _, schedule := range schedules {
+		if !enabled {
+			if err := eventbus.GetEventBus().Publish(topicDelCronTask, schedule.ID); err != nil {
+				logrus.Errorf("publish del cron task failed, error: %v", err)
+				return err
+			}
+		} else {
+			psi, err := s.scheduleDB.Detail(&Schedule{ID: schedule.ID})
+			if err != nil {
+				logrus.Errorf("get schedule failed, error: %v", err)
+				return err
+			}
+
+			ps, err := json.Marshal(psi)
+			if err != nil {
+				logrus.Errorf("marshal schedule params failed, error: %v", err)
+				return err
+			}
+			if err := eventbus.GetEventBus().Publish(topicAddCronTask, string(ps)); err != nil {
+				logrus.Errorf("publish add cron task failed, error: %v", err)
+				return err
+			}
+		}
+
+	}
+	tx.Commit()
+	return nil
+}
+
+// BatchDeleteSchedule batch delete schedule
+func (s *Service) BatchDeleteSchedule(ids []uuid.UUID) error {
+	tx := s.scheduleDB.DB.Begin()
+	defer tx.Rollback()
+	schedules := make([]*Schedule, 0)
+
+	for _, id := range ids {
+		if id == uuid.Nil {
+			return fmt.Errorf("invalid schedule id: %s", id)
+		}
+		schedules = append(schedules, &Schedule{ID: id})
+	}
+
+	err := s.scheduleDB.DB.Delete(schedules).Error
+
+	if err != nil {
+		logrus.Errorf("batch delete schedule failed, error: %v", err)
+		return err
+	}
+
+	for _, schedule := range schedules {
+		if err := eventbus.GetEventBus().Publish(topicDelCronTask, schedule.ID); err != nil {
+			logrus.Errorf("publish del cron task failed, error: %v", err)
+			return err
+		}
+	}
+	tx.Commit()
 	return nil
 }
 

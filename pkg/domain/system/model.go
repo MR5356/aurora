@@ -30,7 +30,7 @@ func (r *Record) BeforeCreate(tx *gorm.DB) error {
 
 type Statistic struct {
 	Name  string `json:"name"`
-	Count int64  `json:"count"`
+	Count string `json:"count"`
 	Path  string `json:"path"`
 	Icon  string `json:"icon"`
 }

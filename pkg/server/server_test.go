@@ -18,7 +18,7 @@ func TestNew(t *testing.T) {
 	}
 }
 
-// can not pass on github actions
+// can not pass on github checkout
 //func TestServer_Run(t *testing.T) {
 //	cfg := config.New(config.WithDatabase("sqlite", ":memory:"))
 //

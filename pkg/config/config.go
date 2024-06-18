@@ -17,6 +17,7 @@ type Config struct {
 	Database    Database               `json:"database" yaml:"database"`
 	JWT         JWT                    `json:"jwt" yaml:"jwt"`
 	OAuthConfig map[string]OAuthConfig `json:"oauth" yaml:"oauth"`
+	Email       Email                  `json:"email" yaml:"email"`
 }
 
 func Current(cfgs ...Cfg) *Config {
@@ -43,6 +44,15 @@ type Server struct {
 	Prefix      string `json:"prefix" yaml:"prefix" default:"/api/v1"`
 	Debug       bool   `json:"debug" yaml:"debug" default:"false"`
 	GracePeriod int    `json:"gracePeriod" yaml:"gracePeriod" default:"30"`
+	PluginPath  string `json:"pluginPath" yaml:"pluginPath" default:"./_plugins"`
+}
+
+type Email struct {
+	Host     string `json:"host" yaml:"host" default:"smtp-mail.outlook.com"`
+	Port     int    `json:"port" yaml:"port" default:"587"`
+	Username string `json:"username" yaml:"username"`
+	Alias    string `json:"alias" yaml:"alias"`
+	Password string `json:"password" yaml:"password"`
 }
 
 type JWT struct {

@@ -5,6 +5,7 @@ import (
 	"github.com/MR5356/aurora/pkg/response"
 	"github.com/MR5356/aurora/pkg/util/ginutil"
 	"github.com/gin-gonic/gin"
+	"github.com/sirupsen/logrus"
 	"net/http"
 )
 
@@ -93,6 +94,7 @@ func (c *Controller) handleCallback(ctx *gin.Context) {
 				response.ErrorWithMsg(ctx, response.CodeParamsError, err.Error())
 				return
 			}
+
 			ctx.SetCookie("token", token, int(config.Current().JWT.Expire.Seconds()), "", "", false, false)
 			ctx.Redirect(http.StatusTemporaryRedirect, redirectURL)
 		}
@@ -119,6 +121,7 @@ func (c *Controller) handleUserInfo(ctx *gin.Context) {
 
 	user, err := GetJWTService().ParseToken(token)
 	if err != nil {
+		logrus.Errorf("parse token failed, error: %v", err)
 		response.Success(ctx, nil)
 	} else {
 		response.Success(ctx, user)

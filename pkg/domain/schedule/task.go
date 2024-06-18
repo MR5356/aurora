@@ -53,7 +53,7 @@ func (w *WrappedTask) Run() {
 	record := &Record{
 		ScheduleID: w.schedule.ID,
 		Title:      w.schedule.Title,
-		TaskName:   w.schedule.Executor,
+		Executor:   w.schedule.Executor,
 		Params:     w.schedule.Params,
 		Status:     TaskStatusRunning,
 	}

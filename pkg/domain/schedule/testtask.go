@@ -2,6 +2,7 @@ package schedule
 
 import (
 	"github.com/sirupsen/logrus"
+	"time"
 )
 
 type TestTask struct {
@@ -12,6 +13,7 @@ func (t *TestTask) Run() {
 	if t.params == "" {
 		panic("test task params is empty")
 	}
+	time.Sleep(time.Second * 20)
 	logrus.Infof("test task params: %s", t.params)
 }
 
