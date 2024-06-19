@@ -3,6 +3,7 @@ package host
 import (
 	"database/sql/driver"
 	"encoding/json"
+	"github.com/MR5356/aurora/pkg/middleware/database"
 	"github.com/MR5356/aurora/pkg/util/sshutil"
 	"github.com/google/uuid"
 	"gorm.io/gorm"
@@ -10,16 +11,15 @@ import (
 )
 
 type Host struct {
-	ID       uuid.UUID        `json:"id" gorm:"type:uuid;primaryKey" example:"00000000-0000-0000-0000-000000000000"`
+	ID       uuid.UUID        `json:"id" gorm:"type:uuid;primaryKey" swaggerignore:"true" example:"00000000-0000-0000-0000-000000000000"`
 	Title    string           `json:"title" gorm:"not null" validate:"required"`
 	Desc     string           `json:"desc"`
-	HostInfo sshutil.HostInfo `json:"hostInfo" gorm:"unique;not null"`
-	MetaInfo MetaInfo         `json:"metaInfo"`
-	Group    Group            `json:"group"`
+	HostInfo sshutil.HostInfo `json:"hostInfo" gorm:"not null"`
+	MetaInfo MetaInfo         `json:"metaInfo" swaggerignore:"true"`
+	Group    Group            `json:"group" swaggerignore:"true" validate:"omitempty"`
 	GroupId  uuid.UUID        `json:"groupId"`
 
-	CreatedAt time.Time `json:"createdAt" swaggerignore:"true"`
-	UpdatedAt time.Time `json:"updatedAt" swaggerignore:"true"`
+	database.BaseModel
 }
 
 type Group struct {
