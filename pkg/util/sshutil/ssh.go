@@ -22,7 +22,7 @@ type Client struct {
 func NewSSHClient(host HostInfo) (client *Client, err error) {
 	sshClient, err := ssh.Dial("tcp", fmt.Sprintf("%s:%d", host.Host, host.Port), &ssh.ClientConfig{
 		User:            host.Username,
-		Auth:            []ssh.AuthMethod{ssh.Password(host.Password)},
+		Auth:            host.GetAuthMethods(),
 		HostKeyCallback: ssh.InsecureIgnoreHostKey(),
 		Timeout:         time.Second * 10,
 	})

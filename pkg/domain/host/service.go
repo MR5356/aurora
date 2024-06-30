@@ -131,7 +131,7 @@ func (s *Service) ListHost(host *Host) ([]*Host, error) {
 func (s *Service) checkHost(machine *Host) error {
 	sshClient, err := ssh.Dial("tcp", fmt.Sprintf("%s:%d", machine.HostInfo.Host, machine.HostInfo.Port), &ssh.ClientConfig{
 		User:            machine.HostInfo.Username,
-		Auth:            []ssh.AuthMethod{ssh.Password(machine.HostInfo.Password)},
+		Auth:            machine.HostInfo.GetAuthMethods(),
 		HostKeyCallback: ssh.InsecureIgnoreHostKey(),
 		Timeout:         time.Second * 20,
 	})

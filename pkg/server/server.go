@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"github.com/MR5356/aurora/docs"
 	"github.com/MR5356/aurora/pkg/config"
+	"github.com/MR5356/aurora/pkg/domain/health"
 	"github.com/MR5356/aurora/pkg/domain/host"
 	"github.com/MR5356/aurora/pkg/domain/notify"
 	"github.com/MR5356/aurora/pkg/domain/pipeline"
@@ -97,6 +98,7 @@ func New(cfg *config.Config) (server *Server, err error) {
 		notify.GetService(),
 		pipeline.GetService(),
 		host.GetService(),
+		health.GetService(),
 	}
 
 	for _, svc := range services {
@@ -113,6 +115,7 @@ func New(cfg *config.Config) (server *Server, err error) {
 		notify.NewController(),
 		pipeline.NewController(),
 		host.NewController(),
+		health.NewController(),
 	}
 
 	for _, ctl := range controllers {

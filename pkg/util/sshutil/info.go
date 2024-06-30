@@ -3,6 +3,7 @@ package sshutil
 import (
 	"database/sql/driver"
 	"encoding/json"
+	"golang.org/x/crypto/ssh"
 )
 
 // Stats 基础信息
@@ -15,10 +16,12 @@ type Stats struct {
 }
 
 type HostInfo struct {
-	Host     string `json:"host"`
-	Port     uint16 `json:"port"`
-	Username string `json:"username"`
-	Password string `json:"password"`
+	Host       string `json:"host"`
+	Port       uint16 `json:"port"`
+	Username   string `json:"username"`
+	Password   string `json:"password"`
+	PrivateKey string `json:"privateKey"`
+	Passphrase string `json:"passphrase"`
 }
 
 func (h *HostInfo) Scan(val interface{}) error {
@@ -30,6 +33,29 @@ func (h *HostInfo) Scan(val interface{}) error {
 func (h HostInfo) Value() (driver.Value, error) {
 	s, err := json.Marshal(h)
 	return string(s), err
+}
+
+func (h *HostInfo) GetAuthMethods() []ssh.AuthMethod {
+	authMethods := make([]ssh.AuthMethod, 0)
+
+	if len(h.PrivateKey) > 0 {
+		if len(h.Passphrase) > 0 {
+			signer, err := ssh.ParsePrivateKeyWithPassphrase([]byte(h.PrivateKey), []byte(h.Passphrase))
+			if err == nil {
+				authMethods = append(authMethods, ssh.PublicKeys(signer))
+			}
+		} else {
+			signer, err := ssh.ParsePrivateKey([]byte(h.PrivateKey))
+			if err == nil {
+				authMethods = append(authMethods, ssh.PublicKeys(signer))
+			}
+		}
+	}
+
+	if len(h.Password) > 0 {
+		authMethods = append(authMethods, ssh.Password(h.Password))
+	}
+	return authMethods
 }
 
 func (s *Stats) Default() {
