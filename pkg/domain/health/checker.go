@@ -14,7 +14,7 @@ import (
 
 const (
 	defaultCron     = "*/10 * * * * *"
-	defaultPingCron = "*/2 * * * * *"
+	defaultPingCron = "*/1 * * * * *"
 	defaultHttpCron = "*/2 * * * * *"
 	defaultSSHCron  = "*/10 * * * * *"
 	defaultDBCron   = "*/10 * * * * *"

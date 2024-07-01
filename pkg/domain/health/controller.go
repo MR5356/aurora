@@ -130,10 +130,14 @@ func (c *Controller) handleGetTimeRangeRecord(ctx *gin.Context) {
 		return
 	} else {
 		var startTime, endTime time.Time
-		if err := ctx.ShouldBindQuery(&startTime); err != nil {
+		st := ctx.Query("startTime")
+		if startTime, err = time.Parse(time.RFC3339, st); err != nil {
+			logrus.Errorf("bind query failed, error: %v", err)
 			startTime = time.Now().Add(-10 * time.Minute)
 		}
-		if err := ctx.ShouldBindQuery(&endTime); err != nil {
+		et := ctx.Query("endTime")
+		if endTime, err = time.Parse(time.RFC3339, et); err != nil {
+			logrus.Errorf("bind query failed, error: %v", err)
 			endTime = time.Now()
 		}
 		logrus.Infof("startTime: %v, endTime: %v", startTime, endTime)
