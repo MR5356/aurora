@@ -7,6 +7,8 @@ import (
 	"fmt"
 	"github.com/MR5356/aurora/docs"
 	"github.com/MR5356/aurora/pkg/config"
+	"github.com/MR5356/aurora/pkg/domain/health"
+	"github.com/MR5356/aurora/pkg/domain/host"
 	"github.com/MR5356/aurora/pkg/domain/notify"
 	"github.com/MR5356/aurora/pkg/domain/pipeline"
 	"github.com/MR5356/aurora/pkg/domain/schedule"
@@ -19,6 +21,7 @@ import (
 	"github.com/MR5356/aurora/pkg/response"
 	"github.com/MR5356/aurora/pkg/server/ginmiddleware"
 	"github.com/MR5356/aurora/pkg/util/structutil"
+	"github.com/gin-contrib/gzip"
 	"github.com/gin-gonic/gin"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"github.com/sirupsen/logrus"
@@ -73,6 +76,7 @@ func New(cfg *config.Config) (server *Server, err error) {
 	})
 
 	api := engine.Group(cfg.Server.Prefix)
+	api.Use(gzip.Gzip(gzip.DefaultCompression))
 
 	// metrics
 	api.GET("/metrics", func(handler http.Handler) gin.HandlerFunc {
@@ -95,6 +99,8 @@ func New(cfg *config.Config) (server *Server, err error) {
 		system.GetService(),
 		notify.GetService(),
 		pipeline.GetService(),
+		host.GetService(),
+		health.GetService(),
 	}
 
 	for _, svc := range services {
@@ -110,6 +116,8 @@ func New(cfg *config.Config) (server *Server, err error) {
 		system.NewController(),
 		notify.NewController(),
 		pipeline.NewController(),
+		host.NewController(),
+		health.NewController(),
 	}
 
 	for _, ctl := range controllers {

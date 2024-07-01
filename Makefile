@@ -74,6 +74,10 @@ plugin:  ## Build builtin plugins
 docker:  ## Build docker image
 	docker buildx build --platform $(TARGET_PLATFORM) -t $(IMAGE_REGISTRY):$(VERSION) . --push
 
+.PHONY: docker-release
+docker-release: clean  ## Build and release the binary by using docker
+	docker buildx build -f bin.Dockerfile --output type=local,dest=_output .
+
 .PHONY: clean
 clean:  ## Clean build artifacts
 	find ./pkg/server/static/* | grep -v robots.txt | xargs rm -rf

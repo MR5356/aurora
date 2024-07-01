@@ -12,9 +12,14 @@ Aurora is an open source system for DevOps.
 
 ----
 
+## Preview
+![host](./img/host.jpg)
+![web-terminal](./img/web-terminal.jpg)
+![health](./img/health.jpg)
+
 ## To start using Aurora
 
-See our documentation on [docker.ac.cn](https://docker.ac.cn)
+See our documentation on [aurora.docker.ac.cn](https://aurora.docker.ac.cn)
 
 ## To start developing Aurora
 
