@@ -56,7 +56,7 @@ build: deps  ## Build the binary
 .PHONY: release
 release: clean deps static  ## Build and release the binary
 	chmod +x hack/release.sh
-	./hack/release.sh $(NAME) $(GO_FLAGS) $(OUT_DIR)
+	./hack/release.sh $(NAME) $(OUT_DIR)
 
 .PHONY: test
 test: deps  ## Run unit tests
