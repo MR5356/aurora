@@ -21,6 +21,7 @@ import (
 	"github.com/MR5356/aurora/pkg/response"
 	"github.com/MR5356/aurora/pkg/server/ginmiddleware"
 	"github.com/MR5356/aurora/pkg/util/structutil"
+	"github.com/gin-contrib/gzip"
 	"github.com/gin-gonic/gin"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"github.com/sirupsen/logrus"
@@ -75,6 +76,7 @@ func New(cfg *config.Config) (server *Server, err error) {
 	})
 
 	api := engine.Group(cfg.Server.Prefix)
+	api.Use(gzip.Gzip(gzip.DefaultCompression))
 
 	// metrics
 	api.GET("/metrics", func(handler http.Handler) gin.HandlerFunc {

@@ -158,6 +158,19 @@ func (c *Controller) handleGetHealthCheckTypes(ctx *gin.Context) {
 	response.Success(ctx, c.service.GetHealthCheckTypes())
 }
 
+// @Summary	get statistics
+// @Tags		health
+// @Success	200	{object}	response.Response{data=Statistics}
+// @Router		/health/statistics [get]
+// @Produce	json
+func (c *Controller) handleGetStatistics(ctx *gin.Context) {
+	if res, err := c.service.HealthStatistics(); err != nil {
+		response.ErrorWithMsg(ctx, response.CodeServerError, err.Error())
+	} else {
+		response.Success(ctx, res)
+	}
+}
+
 func (c *Controller) RegisterRoute(group *gin.RouterGroup) {
 	api := group.Group("/health")
 
@@ -167,6 +180,7 @@ func (c *Controller) RegisterRoute(group *gin.RouterGroup) {
 	api.DELETE("/:id", c.handleDeleteHealth)
 	api.GET("/:id/detail", c.handleDetailHealth)
 	api.GET("/types", c.handleGetHealthCheckTypes)
+	api.GET("/statistics", c.handleGetStatistics)
 
 	api.GET("/:id/record", c.handleGetTimeRangeRecord)
 }

@@ -10,6 +10,7 @@ import (
 	"github.com/MR5356/health/url"
 	"github.com/robfig/cron/v3"
 	"github.com/sirupsen/logrus"
+	"github.com/spf13/cast"
 )
 
 const (
@@ -18,6 +19,11 @@ const (
 	defaultHttpCron = "*/2 * * * * *"
 	defaultSSHCron  = "*/10 * * * * *"
 	defaultDBCron   = "*/10 * * * * *"
+)
+
+var (
+	ErrParam    = errors.New("invalid param")
+	StatusError = health.Status("error")
 )
 
 func getCron(t string) string {
@@ -55,88 +61,104 @@ type Checker struct {
 
 func (c *Checker) Run() {
 	logrus.Debugf("health check: %s", c.health.Title)
+	c.health.RTT = 0
+	c.health.Status = string(health.StatusUnknown)
+	defer func() {
+		if err := c.service.healthDb.Update(&Health{ID: c.health.ID}, structutil.Struct2Map(c.health)); err != nil {
+			logrus.Errorf("update health failed, error: %v", err)
+		}
+	}()
 	var checker health.Checker
 	var params Params
 	if err := json.Unmarshal([]byte(c.health.Params), &params); err != nil {
 		logrus.Errorf("unmarshal params failed, error: %v", err)
+		c.health.Status = string(StatusError)
 		return
 	}
 	switch c.health.Type {
 	case "http":
-		if str, ok := params.GetKey("url").(string); ok {
-			checker = url.NewChecker(str)
-		} else {
+		if str, err := cast.ToStringE(params.GetKey("url")); err != nil {
 			logrus.Errorf("http url is empty")
+			c.health.Status = string(StatusError)
 			return
+		} else {
+			checker = url.NewChecker(str)
 		}
 	case "ssh":
-		privateKey, ok := params.GetKey("privateKey").(string)
-		if !ok {
+		privateKey, err := cast.ToStringE(params.GetKey("privateKey"))
+		if err != nil {
 			logrus.Errorf("ssh private key is empty")
+			c.health.Status = string(StatusError)
 			return
 		}
-		passphrase, ok := params.GetKey("passphrase").(string)
-		if !ok {
+		passphrase, err := cast.ToStringE(params.GetKey("passphrase"))
+		if err != nil {
 			logrus.Errorf("ssh passphrase is empty")
+			c.health.Status = string(StatusError)
 			return
 		}
-		hostStr, ok := params.GetKey("host").(string)
-		if !ok {
+		hostStr, err := cast.ToStringE(params.GetKey("host"))
+		if err != nil {
 			logrus.Errorf("ssh host is empty")
+			c.health.Status = string(StatusError)
 			return
 		}
-		port, ok := params.GetKey("port").(float64)
-		if !ok {
+		port, err := cast.ToUint16E(params.GetKey("port"))
+		if err != nil {
 			logrus.Errorf("ssh port is empty")
+			c.health.Status = string(StatusError)
 			return
 		}
-		username, ok := params.GetKey("username").(string)
-		if !ok {
+		username, err := cast.ToStringE(params.GetKey("username"))
+		if err != nil {
 			logrus.Errorf("ssh username is empty")
+			c.health.Status = string(StatusError)
 			return
 		}
-		password, ok := params.GetKey("password").(string)
-		if !ok {
+		password, err := cast.ToStringE(params.GetKey("password"))
+		if err != nil {
 			logrus.Errorf("ssh password is empty")
+			c.health.Status = string(StatusError)
 			return
 		}
 		checker = host.NewSSHChecker(&host.HostInfo{
 			PrivateKey: privateKey,
 			Passphrase: passphrase,
 			Host:       hostStr,
-			Port:       uint16(port),
+			Port:       port,
 			Username:   username,
 			Password:   password,
 		})
 	case "ping":
-		if str, ok := params.GetKey("host").(string); ok {
+		if str, err := cast.ToStringE(params.GetKey("host")); err == nil {
 			checker = host.NewPingChecker(str)
 		} else {
 			logrus.Errorf("ping host is empty")
+			c.health.Status = string(StatusError)
 			return
 		}
 	case "database":
-		dbType, ok := params.GetKey("dbDriverType").(string)
-		if !ok {
+		dbType, err := cast.ToStringE(params.GetKey("dbDriverType"))
+		if err != nil {
 			logrus.Errorf("database dbDriverType is empty")
+			c.health.Status = string(StatusError)
 			return
 		}
-		dsn, ok := params.GetKey("dsn").(string)
-		if !ok {
+		dsn, err := cast.ToStringE(params.GetKey("dsn"))
+		if err != nil {
 			logrus.Errorf("database dsn is empty")
+			c.health.Status = string(StatusError)
 			return
 		}
 		checker = database.NewChecker(dbType, dsn)
 	default:
 		logrus.Errorf("unknown health check type: %s", c.health.Type)
+		c.health.Status = string(StatusError)
 		return
 	}
 	res := checker.Check()
 	c.health.Status = string(res.Status)
 	c.health.RTT = res.RTT
-	if err := c.service.healthDb.Update(&Health{ID: c.health.ID}, structutil.Struct2Map(c.health)); err != nil {
-		logrus.Errorf("update health failed, error: %v", err)
-	}
 
 	result, _ := json.Marshal(res.Result)
 	healthRecord := &Record{

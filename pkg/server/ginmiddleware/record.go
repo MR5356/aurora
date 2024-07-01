@@ -42,7 +42,7 @@ func Record() gin.HandlerFunc {
 				case httpCode >= http.StatusBadRequest:
 					entry.Warn(msg)
 				default:
-					entry.Info(msg)
+					entry.Debug(msg)
 				}
 			}
 

@@ -10,6 +10,13 @@ import (
 	"time"
 )
 
+const (
+	typePing = "ping"
+	typeHttp = "http"
+	typeSSH  = "ssh"
+	typeDB   = "database"
+)
+
 var (
 	onceService sync.Once
 	service     *Service
@@ -36,8 +43,41 @@ func GetService() *Service {
 	return service
 }
 
-func (s *Service) ListHealth(health *Health) ([]*Health, error) {
-	return s.healthDb.List(health)
+func (s *Service) HealthStatistics() (*Statistics, error) {
+	statistics := &Statistics{}
+
+	s.healthDb.DB.Model(&Health{}).Where("enabled = ?", true).Where("status = ?", "up").Count(&statistics.Up)
+	s.healthDb.DB.Model(&Health{}).Where("enabled = ?", true).Where("status = ?", "down").Count(&statistics.Down)
+	s.healthDb.DB.Model(&Health{}).Where("enabled = ?", true).Where("status = ?", "unknown").Count(&statistics.Unknown)
+	s.healthDb.DB.Model(&Health{}).Where("enabled = ?", true).Where("status = ?", "error").Count(&statistics.Error)
+	s.healthDb.DB.Model(&Health{}).Where("enabled = ?", true).Where("type = ?", "ping").Count(&statistics.Ping)
+	s.healthDb.DB.Model(&Health{}).Where("enabled = ?", true).Where("type = ?", "ssh").Count(&statistics.SSH)
+	s.healthDb.DB.Model(&Health{}).Where("enabled = ?", true).Where("type = ?", "http").Count(&statistics.HTTP)
+	s.healthDb.DB.Model(&Health{}).Where("enabled = ?", true).Where("type = ?", "database").Count(&statistics.Database)
+	s.healthDb.DB.Model(&Health{}).Where("enabled = ?", true).Where("status = ?", "down").Scan(&statistics.ErrorList)
+	s.healthDb.DB.Model(&Health{}).Where("enabled = ?", true).Where("rtt > ?", 460).Where("status = ?", "up").Order("rtt desc").Limit(10).Scan(&statistics.SlowList)
+
+	return statistics, nil
+}
+
+func (s *Service) ListHealth(health *Health) ([]*HealthListResponse, error) {
+	if res, err := s.healthDb.List(health); err != nil {
+		return nil, err
+	} else {
+		result := make([]*HealthListResponse, 0)
+		for _, item := range res {
+			result = append(result, &HealthListResponse{
+				ID:      item.ID,
+				Title:   item.Title,
+				Desc:    item.Desc,
+				Type:    item.Type,
+				Enabled: item.Enabled,
+				Status:  item.Status,
+				RTT:     item.RTT,
+			})
+		}
+		return result, err
+	}
 }
 
 func (s *Service) AddHealth(health *Health) error {

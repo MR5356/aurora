@@ -19,6 +19,38 @@ type Health struct {
 	database.BaseModel
 }
 
+type Statistics struct {
+	Total     int64                 `json:"total"`
+	Up        int64                 `json:"up"`
+	Down      int64                 `json:"down"`
+	Unknown   int64                 `json:"unknown"`
+	Error     int64                 `json:"error"`
+	Ping      int64                 `json:"ping"`
+	SSH       int64                 `json:"ssh"`
+	HTTP      int64                 `json:"http"`
+	Database  int64                 `json:"database"`
+	ErrorList []*HealthListResponse `json:"errorList"`
+	SlowList  []*HealthListResponse `json:"slowList"` // rtt > 460
+}
+
+type Count struct {
+	Total   int64 `json:"total"`
+	Up      int64 `json:"up"`
+	Down    int64 `json:"down"`
+	Unknown int64 `json:"unknown"`
+	Error   int64 `json:"error"`
+}
+
+type HealthListResponse struct {
+	ID      uuid.UUID `json:"id" gorm:"type:uuid;primaryKey" swaggerignore:"true" example:"00000000-0000-0000-0000-000000000000"`
+	Title   string    `json:"title" gorm:"not null" validate:"required"`
+	Desc    string    `json:"desc"`
+	Type    string    `json:"type" gorm:"length:32" validate:"oneof=ping ssh http database"`
+	Enabled bool      `json:"enabled"`
+	Status  string    `json:"status"` // last result
+	RTT     int64     `json:"rtt"`    // last result
+}
+
 func (h *Health) TableName() string {
 	return "health_check"
 }
