@@ -93,7 +93,7 @@ func (s *Service) GetStatistic() ([]*Statistic, error) {
 	res = append(res, &Statistic{
 		Name:  "statistic.terminal",
 		Count: "i18n://terminal.info",
-		Path:  "/online-terminal",
+		Path:  "/terminal",
 		Icon:  "terminal",
 	})
 
