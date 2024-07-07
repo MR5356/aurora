@@ -29,8 +29,13 @@ func (c *Controller) handleGetStatistic(ctx *gin.Context) {
 	}
 }
 
+func (c *Controller) handleGetVersion(ctx *gin.Context) {
+	response.Success(ctx, c.service.GetVersionInfo())
+}
+
 func (c *Controller) RegisterRoute(group *gin.RouterGroup) {
 	api := group.Group("/system")
 
 	api.GET("/statistic", c.handleGetStatistic)
+	api.GET("/version", c.handleGetVersion)
 }

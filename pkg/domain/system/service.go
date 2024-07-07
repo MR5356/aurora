@@ -1,13 +1,18 @@
 package system
 
 import (
+	"context"
 	"fmt"
 	"github.com/MR5356/aurora/pkg/domain/health"
 	"github.com/MR5356/aurora/pkg/domain/host"
 	"github.com/MR5356/aurora/pkg/domain/schedule"
 	"github.com/MR5356/aurora/pkg/domain/user"
 	"github.com/MR5356/aurora/pkg/middleware/database"
+	"github.com/MR5356/aurora/pkg/version"
+	"github.com/google/go-github/v61/github"
+	"github.com/spf13/cast"
 	"sync"
+	"time"
 )
 
 var (
@@ -38,6 +43,24 @@ func GetService() *Service {
 
 func (s *Service) InsertRecord(record *Record) error {
 	return s.recordDB.Insert(record)
+}
+
+func (s *Service) GetVersionInfo() *Version {
+	result := &Version{
+		Version: version.Version,
+	}
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
+	defer cancel()
+	client := github.NewClient(nil)
+	res, _, err := client.Repositories.GetLatestRelease(ctx, "MR5356", "aurora")
+	if err != nil {
+		return result
+	}
+	result.LatestInfo = cast.ToString(*res.Body)
+	result.LatestVersion = cast.ToString(*res.TagName)
+	result.LatestUrl = cast.ToString(*res.HTMLURL)
+
+	return result
 }
 
 func (s *Service) GetStatistic() ([]*Statistic, error) {

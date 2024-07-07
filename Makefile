@@ -73,6 +73,7 @@ plugin:  ## Build builtin plugins
 .PHONY: docker
 docker:  ## Build docker image
 	docker buildx build --platform $(TARGET_PLATFORM) -t $(IMAGE_REGISTRY):$(VERSION) . --push
+	docker buildx build --platform $(TARGET_PLATFORM) -t $(IMAGE_REGISTRY):latest . --push
 
 .PHONY: docker-release
 docker-release: clean  ## Build and release the binary by using docker
