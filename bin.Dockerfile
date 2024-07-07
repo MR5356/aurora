@@ -23,7 +23,7 @@ RUN make init && go mod download
 
 COPY . .
 COPY --from=node-builder /build/dist ./pkg/server/static
-RUN make deps && chmod +x hack/release.sh && ./hack/release.sh aurora "-s -w -X 'github.com/MR5356/aurora/pkg/version.Version=v0.0.1'" _output
+RUN make deps && chmod +x hack/release.sh && ./hack/release.sh aurora _output
 
 FROM scratch
 COPY --from=builder /build/_output /

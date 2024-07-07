@@ -56,7 +56,7 @@ build: deps  ## Build the binary
 .PHONY: release
 release: clean deps static  ## Build and release the binary
 	chmod +x hack/release.sh
-	./hack/release.sh $(NAME) $(GO_FLAGS) $(OUT_DIR)
+	./hack/release.sh $(NAME) $(OUT_DIR)
 
 .PHONY: test
 test: deps  ## Run unit tests
@@ -73,6 +73,7 @@ plugin:  ## Build builtin plugins
 .PHONY: docker
 docker:  ## Build docker image
 	docker buildx build --platform $(TARGET_PLATFORM) -t $(IMAGE_REGISTRY):$(VERSION) . --push
+	docker buildx build --platform $(TARGET_PLATFORM) -t $(IMAGE_REGISTRY):latest . --push
 
 .PHONY: docker-release
 docker-release: clean  ## Build and release the binary by using docker

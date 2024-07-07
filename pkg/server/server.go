@@ -79,7 +79,7 @@ func New(cfg *config.Config) (server *Server, err error) {
 	api.Use(gzip.Gzip(gzip.DefaultCompression))
 
 	// metrics
-	api.GET("/metrics", func(handler http.Handler) gin.HandlerFunc {
+	engine.GET("/api/v1/metrics", func(handler http.Handler) gin.HandlerFunc {
 		return func(context *gin.Context) {
 			handler.ServeHTTP(context.Writer, context.Request)
 		}

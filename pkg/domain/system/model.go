@@ -34,3 +34,10 @@ type Statistic struct {
 	Path  string `json:"path"`
 	Icon  string `json:"icon"`
 }
+
+type Version struct {
+	Version       string `json:"version"`
+	LatestVersion string `json:"latestVersion"`
+	LatestInfo    string `json:"latestInfo"`
+	LatestUrl     string `json:"latestUrl"`
+}
