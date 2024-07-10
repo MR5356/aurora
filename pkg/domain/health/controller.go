@@ -1,11 +1,19 @@
 package health
 
 import (
+	"encoding/json"
+	"fmt"
 	"github.com/MR5356/aurora/pkg/response"
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 	"github.com/sirupsen/logrus"
+	"sync/atomic"
 	"time"
+)
+
+var (
+	statisticClientCount = atomic.Int64{}
+	statistic            *Statistics
 )
 
 type Controller struct {
@@ -13,9 +21,12 @@ type Controller struct {
 }
 
 func NewController() *Controller {
-	return &Controller{
+	c := &Controller{
 		service: GetService(),
 	}
+
+	go c.cacheStatistics()
+	return c
 }
 
 // @Summary	list health
@@ -171,6 +182,61 @@ func (c *Controller) handleGetStatistics(ctx *gin.Context) {
 	}
 }
 
+func (c *Controller) cacheStatistics() {
+	for range time.Tick(time.Second) {
+		if statisticClientCount.Load() > 0 {
+			if res, err := c.service.HealthStatistics(); err != nil {
+				logrus.Errorf("cache statistics failed, error: %v", err)
+			} else {
+				statistic = res
+			}
+		}
+	}
+}
+
+// @Summary	get statistics with SSE
+// @Tags		health
+// @Success	200	{object}	response.Response
+// @Router		/health/statistics/sse [get]
+// @Produce	json
+func (c *Controller) handleGetStatisticsWithSSE(ctx *gin.Context) {
+	statisticClientCount.Add(1)
+	defer statisticClientCount.Add(-1)
+	ctx.Writer.Header().Set("Content-Type", "text/event-stream")
+	ctx.Writer.Header().Set("Cache-Control", "no-cache")
+	ctx.Writer.Header().Set("Connection", "keep-alive")
+	ctx.Writer.Header().Set("Access-Control-Allow-Origin", "*")
+
+	notify := ctx.Writer.CloseNotify()
+
+	// send statistic right away
+	resStr, _ := json.Marshal(statistic)
+	_, err := fmt.Fprintf(ctx.Writer, "data: %s\n\n", resStr)
+	if err != nil {
+		logrus.Errorf("write response failed, error: %v", err)
+		return
+	}
+	ctx.Writer.Flush()
+
+	t := time.Tick(time.Second)
+
+	for {
+		select {
+		case <-notify:
+			logrus.Infof("Close SSE connection")
+			return
+		case <-t:
+			resStr, _ = json.Marshal(statistic)
+			_, err = fmt.Fprintf(ctx.Writer, "data: %s\n\n", resStr)
+			if err != nil {
+				logrus.Errorf("write response failed, error: %v", err)
+				return
+			}
+			ctx.Writer.Flush()
+		}
+	}
+}
+
 func (c *Controller) RegisterRoute(group *gin.RouterGroup) {
 	api := group.Group("/health")
 
@@ -181,6 +247,7 @@ func (c *Controller) RegisterRoute(group *gin.RouterGroup) {
 	api.GET("/:id/detail", c.handleDetailHealth)
 	api.GET("/types", c.handleGetHealthCheckTypes)
 	api.GET("/statistics", c.handleGetStatistics)
+	api.GET("/statistics/sse", c.handleGetStatisticsWithSSE)
 
 	api.GET("/:id/record", c.handleGetTimeRangeRecord)
 }
