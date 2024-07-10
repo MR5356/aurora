@@ -12,17 +12,24 @@ type Client interface {
 }
 
 type Container struct {
-	ID          string             `json:"id"`
-	Name        string             `json:"name"`
-	Image       string             `json:"image"`
-	ImageID     string             `json:"imageId"`
-	Command     string             `json:"command"`
-	Created     int64              `json:"created"`
-	Ports       []types.Port       `json:"ports"`
-	Status      string             `json:"status"`
-	State       string             `json:"state"`
-	NetworkMode string             `json:"networkMode"`
-	Mounts      []types.MountPoint `json:"mounts"`
+	ID          string       `json:"id"`
+	Name        string       `json:"name"`
+	Image       string       `json:"image"`
+	ImageID     string       `json:"imageId"`
+	Command     string       `json:"command"`
+	Created     int64        `json:"created"`
+	Ports       []types.Port `json:"ports"`
+	Status      string       `json:"status"`
+	State       string       `json:"state"`
+	NetworkMode string       `json:"networkMode"`
+	Mounts      []Mount      `json:"mounts"`
+	Runtime     string       `json:"runtime"`
+}
+
+type Mount struct {
+	Source string `json:"source"`
+	Dest   string `json:"dest"`
+	Type   string `json:"type"`
 }
 
 type Image struct {

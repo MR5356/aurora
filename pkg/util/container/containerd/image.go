@@ -66,9 +66,30 @@ func (c *Client) getContainerByNamespace(ctx context.Context, namespace string) 
 		return nil, err
 	}
 	for _, c := range cs {
+		i, err := c.Info(ctx)
+		if err != nil {
+			return nil, err
+		}
+		s, err := c.Spec(ctx)
+		if err != nil {
+			return nil, err
+		}
+		mount := make([]container.Mount, 0)
+		for _, m := range s.Mounts {
+			mount = append(mount, container.Mount{
+				Dest:   m.Destination,
+				Source: m.Source,
+				Type:   m.Type,
+			})
+		}
+
 		result = append(result, &container.Container{
-			ID:   c.ID(),
-			Name: c.ID(),
+			ID:      c.ID(),
+			Name:    c.ID(),
+			Image:   i.Image,
+			Mounts:  mount,
+			Created: i.CreatedAt.Unix(),
+			Runtime: i.Runtime.Name,
 		})
 	}
 	return result, nil

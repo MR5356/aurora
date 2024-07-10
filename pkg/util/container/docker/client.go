@@ -60,6 +60,14 @@ func (c *Client) ContainerList(ctx context.Context, all bool) ([]*auContainer.Co
 		return nil, err
 	} else {
 		for _, ct := range containers {
+			mount := make([]auContainer.Mount, 0, len(ct.Mounts))
+			for _, m := range ct.Mounts {
+				mount = append(mount, auContainer.Mount{
+					Source: m.Source,
+					Dest:   m.Destination,
+					Type:   string(m.Type),
+				})
+			}
 			res = append(res, &auContainer.Container{
 				ID:          ct.ID,
 				Name:        strings.Join(formatter.StripNamePrefix(ct.Names), ","),
@@ -71,7 +79,7 @@ func (c *Client) ContainerList(ctx context.Context, all bool) ([]*auContainer.Co
 				Status:      ct.Status,
 				State:       ct.State,
 				NetworkMode: ct.HostConfig.NetworkMode,
-				Mounts:      ct.Mounts,
+				Mounts:      mount,
 			})
 		}
 	}
