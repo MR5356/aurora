@@ -47,6 +47,10 @@ func NewClientWithSSH(sshInfo *sshutil.HostInfo) (*Client, error) {
 	}, nil
 }
 
+func (c *Client) Close() {
+	_ = c.client.Close()
+}
+
 func (c *Client) ContainerList(ctx context.Context, all bool) ([]*auContainer.Container, error) {
 	var res []*auContainer.Container
 	if containers, err := c.client.ContainerList(ctx, container.ListOptions{

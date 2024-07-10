@@ -3,12 +3,12 @@ package container
 import (
 	"context"
 	"github.com/docker/docker/api/types"
-	"github.com/docker/docker/api/types/image"
 )
 
 type Client interface {
 	ContainerList(ctx context.Context, all bool) ([]*Container, error) // Show all containers (default shows just running)
-	ImageList(ctx context.Context, all bool) ([]image.Summary, error)  // Show all images (default hides intermediate images)
+	ImageList(ctx context.Context, all bool) ([]*Image, error)         // Show all images (default hides intermediate images)
+	Close()
 }
 
 type Container struct {
@@ -23,4 +23,12 @@ type Container struct {
 	State       string             `json:"state"`
 	NetworkMode string             `json:"networkMode"`
 	Mounts      []types.MountPoint `json:"mounts"`
+}
+
+type Image struct {
+	ID      string            `json:"id"`
+	Labels  map[string]string `json:"labels"`
+	Size    int64             `json:"size"`
+	Name    string            `json:"name"`
+	Created int64             `json:"created"`
 }
