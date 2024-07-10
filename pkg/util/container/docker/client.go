@@ -78,11 +78,25 @@ func (c *Client) ContainerList(ctx context.Context, all bool) ([]*auContainer.Co
 	return res, nil
 }
 
-func (c *Client) ImageList(ctx context.Context, all bool) ([]image.Summary, error) {
-	return c.client.ImageList(ctx, image.ListOptions{
+func (c *Client) ImageList(ctx context.Context, all bool) ([]*auContainer.Image, error) {
+	var result []*auContainer.Image
+	images, err := c.client.ImageList(ctx, image.ListOptions{
 		All:     all,
 		Filters: filters.Args{},
 	})
+	if err != nil {
+		return nil, err
+	}
+	for _, i := range images {
+		result = append(result, &auContainer.Image{
+			ID:      i.ID,
+			Labels:  i.Labels,
+			Size:    i.Size,
+			Name:    strings.Join(i.RepoTags, ","),
+			Created: i.Created,
+		})
+	}
+	return result, nil
 }
 
 func (c *Client) Version(ctx context.Context) (types.Version, error) {

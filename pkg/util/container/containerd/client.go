@@ -47,6 +47,7 @@ func NewClientWithSSH(sshInfo *sshutil.HostInfo) (*Client, error) {
 	logrus.Debugf("remote socket: %s", remoteSocket)
 
 	// connect to containerd via ssh
+	// FIXME: BUG: ssh: rejected: administratively prohibited (open failed)
 	tunnel, err := sshClient.GetClient().Dial("unix", remoteSocket)
 	if err != nil {
 		logrus.Errorf("Failed to connect to containerd: %v", err)
