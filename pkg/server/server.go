@@ -11,6 +11,7 @@ import (
 	"github.com/MR5356/aurora/pkg/domain/host"
 	"github.com/MR5356/aurora/pkg/domain/notify"
 	"github.com/MR5356/aurora/pkg/domain/pipeline"
+	"github.com/MR5356/aurora/pkg/domain/plugin"
 	"github.com/MR5356/aurora/pkg/domain/schedule"
 	"github.com/MR5356/aurora/pkg/domain/system"
 	"github.com/MR5356/aurora/pkg/domain/user"
@@ -122,6 +123,7 @@ func New(cfg *config.Config) (server *Server, err error) {
 		pipeline.NewController(),
 		host.NewController(),
 		health.NewController(),
+		plugin.NewController(),
 	}
 
 	for _, ctl := range controllers {
