@@ -11,7 +11,9 @@ import (
 	"github.com/MR5356/aurora/pkg/domain/host"
 	"github.com/MR5356/aurora/pkg/domain/notify"
 	"github.com/MR5356/aurora/pkg/domain/pipeline"
+	"github.com/MR5356/aurora/pkg/domain/plugin"
 	"github.com/MR5356/aurora/pkg/domain/schedule"
+	"github.com/MR5356/aurora/pkg/domain/script"
 	"github.com/MR5356/aurora/pkg/domain/system"
 	"github.com/MR5356/aurora/pkg/domain/user"
 	"github.com/MR5356/aurora/pkg/domain/user/oauth"
@@ -20,6 +22,7 @@ import (
 	"github.com/MR5356/aurora/pkg/middleware/eventbus"
 	"github.com/MR5356/aurora/pkg/response"
 	"github.com/MR5356/aurora/pkg/server/ginmiddleware"
+	"github.com/MR5356/aurora/pkg/server/ginmiddleware/datafilter"
 	"github.com/MR5356/aurora/pkg/util/structutil"
 	"github.com/gin-contrib/gzip"
 	"github.com/gin-gonic/gin"
@@ -76,7 +79,10 @@ func New(cfg *config.Config) (server *Server, err error) {
 	})
 
 	api := engine.Group(cfg.Server.Prefix)
-	api.Use(gzip.Gzip(gzip.DefaultCompression))
+	api.Use(
+		gzip.Gzip(gzip.DefaultCompression),
+		datafilter.MustLogin(),
+	)
 
 	// metrics
 	engine.GET("/api/v1/metrics", func(handler http.Handler) gin.HandlerFunc {
@@ -101,6 +107,7 @@ func New(cfg *config.Config) (server *Server, err error) {
 		pipeline.GetService(),
 		host.GetService(),
 		health.GetService(),
+		script.GetService(),
 	}
 
 	for _, svc := range services {
@@ -118,6 +125,8 @@ func New(cfg *config.Config) (server *Server, err error) {
 		pipeline.NewController(),
 		host.NewController(),
 		health.NewController(),
+		plugin.NewController(),
+		script.NewController(),
 	}
 
 	for _, ctl := range controllers {

@@ -38,6 +38,10 @@ func NewSSHClient(host HostInfo) (client *Client, err error) {
 	return
 }
 
+func (c *Client) GetClient() *ssh.Client {
+	return c.sshClient
+}
+
 func (c *Client) GetSession() (*ssh.Session, error) {
 	return c.sshClient.NewSession()
 }

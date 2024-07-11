@@ -226,7 +226,9 @@ func (c *Controller) handleBatchDisableSchedule(ctx *gin.Context) {
 
 func (c *Controller) RegisterRoute(group *gin.RouterGroup) {
 	api := group.Group("/schedule")
-	api.Use(datafilter.AutomationFilter())
+
+	// FIXME: disable global filter
+	//api.Use(datafilter.AutomationFilter())
 	datafilter.RegisterFilter([]datafilter.Filter{
 		{
 			Function: c.handleDeleteSchedule,

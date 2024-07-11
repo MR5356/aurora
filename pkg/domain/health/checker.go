@@ -160,16 +160,16 @@ func (c *Checker) Run() {
 	c.health.Status = string(res.Status)
 	c.health.RTT = res.RTT
 
-	result, _ := json.Marshal(res.Result)
-	healthRecord := &Record{
-		ParentId: c.health.ID,
-		Status:   string(res.Status),
-		Rtt:      res.RTT,
-		Result:   string(result),
-	}
-	if err := c.service.healthRecordDb.Insert(healthRecord); err != nil {
-		logrus.Errorf("insert health record failed, error: %v", err)
-	}
+	//result, _ := json.Marshal(res.Result)
+	//healthRecord := &Record{
+	//	ParentId: c.health.ID,
+	//	Status:   string(res.Status),
+	//	Rtt:      res.RTT,
+	//	Result:   string(result),
+	//}
+	//if err := c.service.healthRecordDb.Insert(healthRecord); err != nil {
+	//	logrus.Errorf("insert health record failed, error: %v", err)
+	//}
 }
 
 func (s *Service) startChecker(health *Health) error {
