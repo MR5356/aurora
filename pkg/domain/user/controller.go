@@ -151,6 +151,16 @@ func (c *Controller) handleBanUser(ctx *gin.Context) {
 		return
 	}
 
+	if currentUser, ok := ctx.Get("user"); !ok {
+		response.Error(ctx, response.CodeNotLogin)
+		return
+	} else {
+		if currentUser.(*User).ID == uid.ID {
+			response.ErrorWithMsg(ctx, response.CodeParamsError, "cannot ban yourself")
+			return
+		}
+	}
+
 	if err := c.service.SetUserStatus(&User{ID: uid.ID}, StatusBan); err != nil {
 		logrus.Infof("set user status failed, error: %v", err)
 		response.Error(ctx, response.CodeParamsError)
