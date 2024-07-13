@@ -22,7 +22,6 @@ import (
 	"github.com/MR5356/aurora/pkg/middleware/eventbus"
 	"github.com/MR5356/aurora/pkg/response"
 	"github.com/MR5356/aurora/pkg/server/ginmiddleware"
-	"github.com/MR5356/aurora/pkg/server/ginmiddleware/datafilter"
 	"github.com/MR5356/aurora/pkg/util/structutil"
 	"github.com/gin-contrib/gzip"
 	"github.com/gin-gonic/gin"
@@ -81,7 +80,7 @@ func New(cfg *config.Config) (server *Server, err error) {
 	api := engine.Group(cfg.Server.Prefix)
 	api.Use(
 		gzip.Gzip(gzip.DefaultCompression),
-		datafilter.MustLogin(),
+		ginmiddleware.MustLogin(),
 	)
 
 	// metrics

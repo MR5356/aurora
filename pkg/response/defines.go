@@ -6,6 +6,7 @@ const (
 	CodeParamsError  = "B0002"
 	CodeNotLogin     = "B1001"
 	CodeNoPermission = "B1002"
+	CodeBanned       = "B1003"
 	CodeServerError  = "A0001"
 
 	MessageSuccess      = "success"
@@ -14,6 +15,7 @@ const (
 	MessageNotLogin     = "not login"
 	MessageNoPermission = "no permission"
 	MessageServerError  = "server error"
+	MessageBanned       = "your account has been banned"
 
 	MessageUnknown = "unknown error"
 )
@@ -25,6 +27,7 @@ var msgMap = map[string]string{
 	CodeServerError:  MessageServerError,
 	CodeNotLogin:     MessageNotLogin,
 	CodeNoPermission: MessageNoPermission,
+	CodeBanned:       MessageBanned,
 }
 
 func message(code string) string {

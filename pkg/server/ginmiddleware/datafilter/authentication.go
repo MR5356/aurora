@@ -14,7 +14,6 @@ import (
 	"github.com/sirupsen/logrus"
 	"io"
 	"reflect"
-	"strings"
 	"sync"
 )
 
@@ -103,21 +102,6 @@ func (w *authedWriter) Write(body []byte) (int, error) {
 	}
 
 	return w.ResponseWriter.Write(body)
-}
-
-func MustLogin() gin.HandlerFunc {
-	return func(ctx *gin.Context) {
-		if !strings.HasPrefix(ctx.Request.URL.Path, "/api/v1/user") {
-			u, err := user.GetJWTService().ParseToken(ginutil.GetToken(ctx))
-			if err != nil {
-				response.Error(ctx, response.CodeNotLogin)
-				ctx.Abort()
-				return
-			}
-			ctx.Set("user", u)
-		}
-		ctx.Next()
-	}
 }
 
 func AutomationFilter() gin.HandlerFunc {
