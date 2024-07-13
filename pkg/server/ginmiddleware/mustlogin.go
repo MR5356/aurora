@@ -12,6 +12,7 @@ func skipLogin(path string) bool {
 	prefixes := []string{
 		"/api/v1/user/info",
 		"/api/v1/user/login",
+		"/api/v1/user/logout",
 		"/api/v1/user/callback",
 		"/api/v1/user/oauth",
 		"/api/v1/swagger",

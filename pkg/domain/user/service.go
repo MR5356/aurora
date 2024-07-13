@@ -200,7 +200,7 @@ func (s *Service) GetOAuthToken(authType string, code string) (token string, err
 	user.Status = StatusActive
 	user.Type = TypeOAuth
 
-	_, err = s.userDB.Detail(&User{ID: user.ID})
+	u, err := s.userDB.Detail(&User{ID: user.ID})
 	if err != nil {
 		err = s.AddUser(user)
 		if err != nil {
@@ -208,6 +208,8 @@ func (s *Service) GetOAuthToken(authType string, code string) (token string, err
 			return "", err
 		}
 	} else {
+		user.Status = u.Status
+
 		err = s.userDB.Update(&User{ID: user.ID}, structutil.Struct2Map(user))
 		if err != nil {
 			logrus.Errorf("update user failed, error: %v", err)
@@ -215,7 +217,7 @@ func (s *Service) GetOAuthToken(authType string, code string) (token string, err
 		}
 	}
 
-	u, err := s.userDB.Detail(&User{ID: user.ID})
+	u, err = s.userDB.Detail(&User{ID: user.ID})
 	if err != nil {
 		return "", err
 	}
