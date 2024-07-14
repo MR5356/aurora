@@ -5,7 +5,7 @@ go 1.22
 require (
 	github.com/MR5356/go-workflow v0.0.0-20240524062002-9881d083d471
 	github.com/MR5356/health v0.0.0-20240630104304-f06b4a52093e
-	github.com/MR5356/jietan v0.0.0-20231130022637-d3683784c4e8
+	github.com/MR5356/jietan v0.0.0-20240714044041-3c75753fbafb
 	github.com/antonfisher/nested-logrus-formatter v1.3.1
 	github.com/asaskevich/EventBus v0.0.0-20200907212545-49d423059eef
 	github.com/casbin/casbin/v2 v2.87.1

@@ -40,3 +40,34 @@ func (p Params) Value() (driver.Value, error) {
 	s, err := json.Marshal(p)
 	return string(s), err
 }
+
+type Record struct {
+	ID          uuid.UUID `json:"id" gorm:"primary_key;type:uuid;" swaggerignore:"true"`
+	ScriptTitle string    `json:"scriptTitle"`
+	Script      string    `json:"script"`
+	Hosts       string    `json:"hosts"`
+	Params      string    `json:"params"`
+	Result      string    `json:"result"`
+	Status      string    `json:"status"`
+	Message     string    `json:"message"`
+	Error       string    `json:"error"`
+
+	database.BaseModel
+}
+
+func (r *Record) TableName() string {
+	return "script_record"
+}
+
+func (r *Record) BeforeCreate(tx *gorm.DB) error {
+	if r.ID == uuid.Nil {
+		r.ID = uuid.New()
+	}
+	return nil
+}
+
+type RunScriptParams struct {
+	ScriptId uuid.UUID
+	HostIds  []uuid.UUID
+	Params   string
+}
