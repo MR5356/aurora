@@ -199,7 +199,7 @@ func (s *Service) verifyTaskParams(schedule *Schedule) error {
 
 	// verify cron string
 	parser := cron.NewParser(cron.SecondOptional | cron.Minute | cron.Hour | cron.Dom | cron.Month | cron.Dow | cron.Descriptor)
-	if _, err := parser.Parse("*/5 * * * * *"); err != nil {
+	if _, err := parser.Parse(schedule.CronString); err != nil {
 		return err
 	}
 	return nil

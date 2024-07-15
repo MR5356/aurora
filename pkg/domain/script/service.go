@@ -85,6 +85,14 @@ func (s *Service) DetailScript(id uuid.UUID) (*Script, error) {
 	return s.scriptDB.Detail(&Script{ID: id})
 }
 
+func (s *Service) GetScriptFile(id uuid.UUID) (string, error) {
+	if script, err := s.scriptDB.Detail(&Script{ID: id}); err != nil {
+		return "", err
+	} else {
+		return script.Content, nil
+	}
+}
+
 func (s *Service) RunScriptOnHosts(rsp *RunScriptParams) error {
 	task := NewTask()
 	psStr, _ := json.Marshal(rsp)
@@ -124,7 +132,6 @@ func (s *Service) GetJobLog(id uuid.UUID) (map[string][]string, error) {
 		}
 		return log, nil
 	}
-
 }
 
 func (s *Service) Initialize() error {
