@@ -1,7 +1,10 @@
 package script
 
 import (
+	"encoding/json"
 	"fmt"
+	"github.com/MR5356/aurora/pkg/domain/host"
+	"github.com/MR5356/aurora/pkg/domain/schedule"
 	"github.com/MR5356/aurora/pkg/middleware/database"
 	"github.com/MR5356/aurora/pkg/util/structutil"
 	"github.com/MR5356/aurora/pkg/util/validate"
@@ -17,12 +20,16 @@ var (
 
 type Service struct {
 	scriptDB *database.BaseMapper[*Script]
+	hostDB   *database.BaseMapper[*host.Host]
+	recordDB *database.BaseMapper[*Record]
 }
 
 func GetService() *Service {
 	onceService.Do(func() {
 		service = &Service{
 			scriptDB: database.NewMapper(database.GetDB(), &Script{}),
+			hostDB:   database.NewMapper(database.GetDB(), &host.Host{}),
+			recordDB: database.NewMapper(database.GetDB(), &Record{}),
 		}
 	})
 	return service
@@ -78,8 +85,66 @@ func (s *Service) DetailScript(id uuid.UUID) (*Script, error) {
 	return s.scriptDB.Detail(&Script{ID: id})
 }
 
+func (s *Service) GetScriptFile(id uuid.UUID) (string, error) {
+	if script, err := s.scriptDB.Detail(&Script{ID: id}); err != nil {
+		return "", err
+	} else {
+		return script.Content, nil
+	}
+}
+
+func (s *Service) RunScriptOnHosts(rsp *RunScriptParams) error {
+	task := NewTask()
+	psStr, _ := json.Marshal(rsp)
+	task.SetParams(string(psStr))
+	go task.Run()
+	return nil
+}
+
+func (s *Service) PageRecord(num, size int, record *Record) (*database.Pager[*Record], error) {
+	if res, err := s.recordDB.Page(record, int64(num), int64(size)); err != nil {
+		return nil, err
+	} else {
+		for _, r := range res.Data {
+			r.Hosts = ""
+		}
+		return res, nil
+	}
+}
+
+func (s *Service) StopScript(id uuid.UUID) error {
+	if job, ok := jobMap.Load(id.String()); ok {
+		job.(*JobInfo).ctxCancel()
+		jobMap.Delete(id.String())
+		return nil
+	} else {
+		return fmt.Errorf("task %s not found", id)
+	}
+}
+
+func (s *Service) GetJobLog(id uuid.UUID) (map[string][]string, error) {
+	if record, err := s.recordDB.Detail(&Record{ID: id}); err != nil {
+		return nil, err
+	} else {
+		log := make(map[string][]string)
+		if err := json.Unmarshal([]byte(record.Result), &log); err != nil {
+			return nil, err
+		}
+		return log, nil
+	}
+}
+
 func (s *Service) Initialize() error {
-	if err := database.GetDB().AutoMigrate(&Script{}); err != nil {
+	if err := database.GetDB().AutoMigrate(&Script{}, &Record{}); err != nil {
+		return err
+	}
+
+	if err := schedule.GetExecutorManager().Register(schedule.Executor{
+		Name:        "script",
+		DisplayName: "script executor",
+	}, func() schedule.Task {
+		return NewTask()
+	}); err != nil {
 		return err
 	}
 	return nil
