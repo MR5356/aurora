@@ -217,4 +217,9 @@ func (c *Controller) RegisterRoute(engine *gin.RouterGroup) {
 
 	term := host.Group("terminal")
 	term.GET(":id", c.handleTerminal)
+
+	container := host.Group("container")
+	container.GET("/:id/network", c.handleListNetwork)
+	container.GET("/:id/image", c.handleListImage)
+	container.GET("/:id/container", c.handleListContainer)
 }

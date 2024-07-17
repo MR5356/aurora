@@ -6,7 +6,7 @@ import (
 	"github.com/containerd/containerd/namespaces"
 )
 
-func (c *Client) ImageList(ctx context.Context, all bool) ([]*container.Image, error) {
+func (c *Client) ListImage(ctx context.Context, all bool) ([]*container.Image, error) {
 	var result []*container.Image
 	if ns, err := c.client.NamespaceService().List(ctx); err != nil {
 		return nil, err
@@ -23,7 +23,7 @@ func (c *Client) ImageList(ctx context.Context, all bool) ([]*container.Image, e
 	return result, nil
 }
 
-func (c *Client) ContainerList(ctx context.Context, all bool) ([]*container.Container, error) {
+func (c *Client) ListContainer(ctx context.Context, all bool) ([]*container.Container, error) {
 	var result []*container.Container
 	if ns, err := c.client.NamespaceService().List(ctx); err != nil {
 		return nil, err

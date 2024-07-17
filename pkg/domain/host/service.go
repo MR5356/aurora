@@ -4,15 +4,18 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"sync"
+	"time"
+
 	"github.com/MR5356/aurora/pkg/middleware/database"
+	"github.com/MR5356/aurora/pkg/util/cacheutil"
+	"github.com/MR5356/aurora/pkg/util/container"
 	"github.com/MR5356/aurora/pkg/util/structutil"
 	"github.com/MR5356/aurora/pkg/util/validate"
 	"github.com/MR5356/jietan/pkg/executor"
 	"github.com/MR5356/jietan/pkg/executor/api"
 	"github.com/google/uuid"
 	"golang.org/x/crypto/ssh"
-	"sync"
-	"time"
 )
 
 var (
@@ -21,15 +24,17 @@ var (
 )
 
 type Service struct {
-	hostDb  *database.BaseMapper[*Host]
-	groupDb *database.BaseMapper[*Group]
+	hostDb               *database.BaseMapper[*Host]
+	groupDb              *database.BaseMapper[*Group]
+	containerClientCache *cacheutil.CountdownCache[container.Client]
 }
 
 func GetService() *Service {
 	onceService.Do(func() {
 		service = &Service{
-			hostDb:  database.NewMapper(database.GetDB(), &Host{}),
-			groupDb: database.NewMapper(database.GetDB(), &Group{}),
+			hostDb:               database.NewMapper(database.GetDB(), &Host{}),
+			groupDb:              database.NewMapper(database.GetDB(), &Group{}),
+			containerClientCache: cacheutil.NewCountdownCache[container.Client](time.Minute * 30),
 		}
 	})
 	return service
