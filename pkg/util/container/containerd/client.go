@@ -12,11 +12,15 @@ import (
 )
 
 const (
-	localSocketFmt  = "/tmp/%s-containerd.sock"
+	localSocketFmt  = "./tmp/%s-containerd.sock"
 	remoteSocketCmd = "find /run -name containerd.sock"
 )
 
 var remoteSocket = ""
+
+func init() {
+	os.MkdirAll("./tmp", os.ModePerm)
+}
 
 type Client struct {
 	client *containerd.Client

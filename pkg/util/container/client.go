@@ -45,7 +45,7 @@ type Image struct {
 type Network struct {
 	ID       string `json:"id"`
 	Name     string `json:"name"`
-	Driver   string `json:"deiver"`
+	Driver   string `json:"driver"`
 	IPv6     bool   `json:"ipv6"`
 	Internal bool   `json:"internal"`
 	Scope    string `json:"scope"`
