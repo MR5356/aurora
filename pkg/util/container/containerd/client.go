@@ -1,14 +1,15 @@
 package containerd
 
 import (
-	"fmt"
-	"github.com/MR5356/aurora/pkg/util/sshutil"
-	"github.com/containerd/containerd"
-	"github.com/sirupsen/logrus"
-	"io"
+	"context"
 	"net"
 	"os"
 	"strings"
+
+	"github.com/MR5356/aurora/pkg/util/sshutil"
+	"github.com/containerd/containerd"
+	"github.com/sirupsen/logrus"
+	"google.golang.org/grpc"
 )
 
 const (
@@ -25,8 +26,9 @@ func init() {
 type Client struct {
 	client *containerd.Client
 
-	socket string
-	tunnel net.Conn
+	socket   string
+	tunnel   net.Conn
+	grocConn *grpc.ClientConn
 }
 
 func NewClientWithSSH(sshInfo *sshutil.HostInfo) (*Client, error) {
@@ -34,11 +36,13 @@ func NewClientWithSSH(sshInfo *sshutil.HostInfo) (*Client, error) {
 
 	sshClient, err := sshutil.NewSSHClient(*sshInfo)
 	if err != nil {
+		logrus.Debugf("new ssh client error: %+v", err)
 		return nil, err
 	}
 
 	session, err := sshClient.GetSession()
 	if err != nil {
+		logrus.Debugf("get ssh session error: %+v", err)
 		return nil, err
 	}
 
@@ -59,36 +63,17 @@ func NewClientWithSSH(sshInfo *sshutil.HostInfo) (*Client, error) {
 	}
 	c.tunnel = tunnel
 
-	localSocket := fmt.Sprintf(localSocketFmt, sshInfo.Host)
-	_ = os.Remove(localSocket)
-	c.socket = localSocket
-
-	// create local listener
-	localListener, err := net.Listen("unix", localSocket)
+	conn, err := grpc.Dial("", grpc.WithContextDialer(func(ctx context.Context, _ string) (net.Conn, error) {
+		return tunnel, nil
+	}), grpc.WithInsecure())
 	if err != nil {
-		logrus.Errorf("Failed to listen on local socket: %v", err)
+		logrus.Debugf("create grpc client error: %+v", err)
 		return nil, err
 	}
-
-	go func() {
-		for {
-			localConn, err := localListener.Accept()
-			if err != nil {
-				logrus.Errorf("Failed to accept connection: %v", err)
-				return
-			}
-			go func() {
-				defer localConn.Close()
-				defer tunnel.Close()
-
-				go io.Copy(localConn, tunnel)
-				io.Copy(tunnel, localConn)
-			}()
-		}
-	}()
+	c.grocConn = conn
 
 	// create containerd client
-	containerdClient, err := containerd.New(localSocket)
+	containerdClient, err := containerd.NewWithConn(conn)
 	if err != nil {
 		logrus.Errorf("Failed to create containerd client: %v", err)
 		return nil, err
@@ -101,5 +86,6 @@ func NewClientWithSSH(sshInfo *sshutil.HostInfo) (*Client, error) {
 func (c *Client) Close() {
 	_ = c.client.Close()
 	_ = c.tunnel.Close()
+	_ = c.grocConn.Close()
 	_ = os.Remove(c.socket)
 }
