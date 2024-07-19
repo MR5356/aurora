@@ -42,9 +42,15 @@ func NewClientWithSSH(sshInfo *sshutil.HostInfo) (*Client, error) {
 		return nil, err
 	}
 
-	return &Client{
+	client := &Client{
 		client: cli,
-	}, nil
+	}
+
+	if _, err = client.Version(context.TODO()); err != nil {
+		return nil, err
+	}
+
+	return client, nil
 }
 
 func (c *Client) Close() {

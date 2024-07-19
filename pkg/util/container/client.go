@@ -2,6 +2,7 @@ package container
 
 import (
 	"context"
+	"io"
 
 	"github.com/docker/docker/api/types"
 )
@@ -10,6 +11,7 @@ type Client interface {
 	ListContainer(ctx context.Context, all bool) ([]*Container, error) // Show all containers (default shows just running)
 	ListImage(ctx context.Context, all bool) ([]*Image, error)         // Show all images (default hides intermediate images)
 	ListNetwork(ctx context.Context) ([]*Network, error)
+	Logs(ctx context.Context, containerId string) (io.ReadCloser, error)
 	Close()
 }
 
