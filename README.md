@@ -8,13 +8,15 @@
 
 ----
 
-Aurora is an open source system for DevOps.
+Aurora is an open source system for DevOps, consisting of:
+* convenient **Admin dashboard UI**
+* **Host** and **scheduled task** management
+* **Health check** etc.
+* and simple **REST-ish API**
+
+**For documentation and examples, please visit [https://aurora.docker.ac.cn](https://aurora.docker.ac.cn).**
 
 ----
-
-## To start using Aurora
-
-See our documentation on [aurora.docker.ac.cn](https://aurora.docker.ac.cn)
 
 ## To start developing Aurora
 

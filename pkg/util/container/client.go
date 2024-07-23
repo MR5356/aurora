@@ -2,12 +2,16 @@ package container
 
 import (
 	"context"
+	"io"
+
 	"github.com/docker/docker/api/types"
 )
 
 type Client interface {
-	ContainerList(ctx context.Context, all bool) ([]*Container, error) // Show all containers (default shows just running)
-	ImageList(ctx context.Context, all bool) ([]*Image, error)         // Show all images (default hides intermediate images)
+	ListContainer(ctx context.Context, all bool) ([]*Container, error) // Show all containers (default shows just running)
+	ListImage(ctx context.Context, all bool) ([]*Image, error)         // Show all images (default hides intermediate images)
+	ListNetwork(ctx context.Context) ([]*Network, error)
+	Logs(ctx context.Context, containerId string) (io.ReadCloser, error)
 	Close()
 }
 
@@ -38,4 +42,13 @@ type Image struct {
 	Size    int64             `json:"size"`
 	Name    string            `json:"name"`
 	Created int64             `json:"created"`
+}
+
+type Network struct {
+	ID       string `json:"id"`
+	Name     string `json:"name"`
+	Driver   string `json:"driver"`
+	IPv6     bool   `json:"ipv6"`
+	Internal bool   `json:"internal"`
+	Scope    string `json:"scope"`
 }

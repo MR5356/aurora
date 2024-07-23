@@ -42,16 +42,22 @@ func NewClientWithSSH(sshInfo *sshutil.HostInfo) (*Client, error) {
 		return nil, err
 	}
 
-	return &Client{
+	client := &Client{
 		client: cli,
-	}, nil
+	}
+
+	if _, err = client.Version(context.TODO()); err != nil {
+		return nil, err
+	}
+
+	return client, nil
 }
 
 func (c *Client) Close() {
 	_ = c.client.Close()
 }
 
-func (c *Client) ContainerList(ctx context.Context, all bool) ([]*auContainer.Container, error) {
+func (c *Client) ListContainer(ctx context.Context, all bool) ([]*auContainer.Container, error) {
 	var res []*auContainer.Container
 	if containers, err := c.client.ContainerList(ctx, container.ListOptions{
 		All:     all,
@@ -86,7 +92,7 @@ func (c *Client) ContainerList(ctx context.Context, all bool) ([]*auContainer.Co
 	return res, nil
 }
 
-func (c *Client) ImageList(ctx context.Context, all bool) ([]*auContainer.Image, error) {
+func (c *Client) ListImage(ctx context.Context, all bool) ([]*auContainer.Image, error) {
 	var result []*auContainer.Image
 	images, err := c.client.ImageList(ctx, image.ListOptions{
 		All:     all,
