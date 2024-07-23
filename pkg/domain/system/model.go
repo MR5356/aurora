@@ -15,6 +15,7 @@ type Record struct {
 	ClientIP  string    `json:"clientIp" gorm:"not null;"`
 	UserAgent string    `json:"userAgent" gorm:"not null;"`
 	Cost      int64     `json:"cost" gorm:"not null;"`
+	IsApi     bool      `json:"-"`
 
 	database.BaseModel
 }

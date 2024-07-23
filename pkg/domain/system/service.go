@@ -83,7 +83,8 @@ func (s *Service) GetStatistic() ([]*Statistic, error) {
 	}
 
 	// record
-	rc, err := s.recordDB.Count(&Record{})
+	var rc int64
+	err = s.recordDB.DB.Model(&Record{}).Where("is_api = ?", false).Count(&rc).Error
 	if err != nil {
 		return res, err
 	}

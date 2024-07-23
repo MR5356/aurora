@@ -9,6 +9,7 @@ import (
 	"github.com/sirupsen/logrus"
 	"net/http"
 	"strconv"
+	"strings"
 	"time"
 )
 
@@ -62,6 +63,7 @@ func Record() gin.HandlerFunc {
 				ClientIP:  clientIP,
 				UserAgent: clientUA,
 				Cost:      cost,
+				IsApi:     strings.HasPrefix(path, "/api/"),
 			})
 
 			if err != nil {
