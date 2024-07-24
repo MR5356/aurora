@@ -8,6 +8,7 @@ import (
 	"github.com/MR5356/aurora/pkg/util/container"
 	"github.com/MR5356/aurora/pkg/util/container/containerd"
 	"github.com/MR5356/aurora/pkg/util/container/docker"
+	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 	"github.com/sirupsen/logrus"
 )
@@ -46,6 +47,15 @@ func (s *Service) GetContainerLogs(ctx context.Context, id uuid.UUID, containerI
 		return nil, err
 	} else {
 		return client.Logs(ctx, containerId)
+	}
+}
+
+func (s *Service) ExecContainer(ctx *gin.Context, id uuid.UUID, containerId, driver, user, cmd string) error {
+	logrus.Infof("come on")
+	if client, err := s.getContainerClient(id, driver); err != nil {
+		return err
+	} else {
+		return client.Terminal(ctx, containerId, user, cmd)
 	}
 }
 

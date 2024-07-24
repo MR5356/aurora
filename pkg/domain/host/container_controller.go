@@ -10,13 +10,13 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
-//	@Summary	list container network
-//	@Tags		container
-//	@Param		id		path		string	true	"host id"
-//	@Param		driver	path		string	true	"container driver"
-//	@Success	200		{object}	response.Response
-//	@Router		/host/container/{id}/{driver}/network [get]
-//	@Produce	json
+// @Summary	list container network
+// @Tags		container
+// @Param		id		path		string	true	"host id"
+// @Param		driver	path		string	true	"container driver"
+// @Success	200		{object}	response.Response
+// @Router		/host/container/{id}/{driver}/network [get]
+// @Produce	json
 func (c *Controller) handleListNetwork(ctx *gin.Context) {
 	if id, err := uuid.Parse(ctx.Param("id")); err != nil {
 		response.Error(ctx, response.CodeParamsError)
@@ -29,13 +29,13 @@ func (c *Controller) handleListNetwork(ctx *gin.Context) {
 	}
 }
 
-//	@Summary	list container container
-//	@Tags		container
-//	@Param		id		path		string	true	"host id"
-//	@Param		driver	path		string	true	"container driver"
-//	@Success	200		{object}	response.Response
-//	@Router		/host/container/{id}/{driver}/container [get]
-//	@Produce	json
+// @Summary	list container container
+// @Tags		container
+// @Param		id		path		string	true	"host id"
+// @Param		driver	path		string	true	"container driver"
+// @Success	200		{object}	response.Response
+// @Router		/host/container/{id}/{driver}/container [get]
+// @Produce	json
 func (c *Controller) handleListContainer(ctx *gin.Context) {
 	if id, err := uuid.Parse(ctx.Param("id")); err != nil {
 		response.Error(ctx, response.CodeParamsError)
@@ -48,13 +48,13 @@ func (c *Controller) handleListContainer(ctx *gin.Context) {
 	}
 }
 
-//	@Summary	list container image
-//	@Tags		container
-//	@Param		id		path		string	true	"host id"
-//	@Param		driver	path		string	true	"container driver"
-//	@Success	200		{object}	response.Response
-//	@Router		/host/container/{id}/{driver}/image [get]
-//	@Produce	json
+// @Summary	list container image
+// @Tags		container
+// @Param		id		path		string	true	"host id"
+// @Param		driver	path		string	true	"container driver"
+// @Success	200		{object}	response.Response
+// @Router		/host/container/{id}/{driver}/image [get]
+// @Produce	json
 func (c *Controller) handleListImage(ctx *gin.Context) {
 	if id, err := uuid.Parse(ctx.Param("id")); err != nil {
 		response.Error(ctx, response.CodeParamsError)
@@ -67,14 +67,14 @@ func (c *Controller) handleListImage(ctx *gin.Context) {
 	}
 }
 
-//	@Summary	get container log
-//	@Tags		container
-//	@Param		id		path		string	true	"host id"
-//	@Param		cid		path		string	true	"container id"
-//	@Param		driver	path		string	true	"container driver"
-//	@Success	200		{object}	response.Response
-//	@Router		/host/container/{id}/container/{cid}/log [get]
-//	@Produce	json
+// @Summary	get container log
+// @Tags		container
+// @Param		id		path		string	true	"host id"
+// @Param		cid		path		string	true	"container id"
+// @Param		driver	path		string	true	"container driver"
+// @Success	200		{object}	response.Response
+// @Router		/host/container/{id}/{driver}/container/{cid}/log [get]
+// @Produce	json
 func (c *Controller) handleGetContainerLogs(ctx *gin.Context) {
 	ctx.Writer.Header().Set("Content-Type", "text/event-stream")
 	ctx.Writer.Header().Set("Cache-Control", "no-cache")
@@ -110,6 +110,31 @@ func (c *Controller) handleGetContainerLogs(ctx *gin.Context) {
 						ctx.Writer.Flush()
 					}
 				}
+			}
+		}
+	}
+}
+
+func (c *Controller) handleExecTerminal(ctx *gin.Context) {
+	logrus.Infof("1111")
+	if id, err := uuid.Parse(ctx.Param("id")); err != nil {
+		logrus.Infof("123")
+
+		response.Error(ctx, response.CodeParamsError)
+	} else {
+		cid := ctx.Param("cid")
+		if len(cid) == 0 {
+			logrus.Infof("124")
+			response.Error(ctx, response.CodeParamsError)
+		} else {
+			user := ctx.Query("user")
+			cmd := ctx.Query("cmd")
+			if len(cmd) == 0 {
+				cmd = "/bin/sh"
+			}
+			if err := c.service.ExecContainer(ctx, id, cid, ctx.Param("driver"), user, cmd); err != nil {
+				logrus.Infof("125")
+				response.ErrorWithMsg(ctx, response.CodeParamsError, err.Error())
 			}
 		}
 	}

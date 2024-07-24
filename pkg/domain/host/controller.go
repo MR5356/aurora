@@ -223,4 +223,5 @@ func (c *Controller) RegisterRoute(engine *gin.RouterGroup) {
 	container.GET("/:id/:driver/image", c.handleListImage)
 	container.GET("/:id/:driver/container", c.handleListContainer)
 	container.GET("/:id/:driver/container/:cid/log", c.handleGetContainerLogs)
+	container.GET("/:id/:driver/container/:cid/terminal", c.handleExecTerminal)
 }
