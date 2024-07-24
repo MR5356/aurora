@@ -10,17 +10,18 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
-// @Summary	list container network
-// @Tags		container
-// @Param		id	path		string	true	"host id"
-// @Success	200	{object}	response.Response
-// @Router		/host/container/{id}/network [get]
-// @Produce	json
+//	@Summary	list container network
+//	@Tags		container
+//	@Param		id		path		string	true	"host id"
+//	@Param		driver	path		string	true	"container driver"
+//	@Success	200		{object}	response.Response
+//	@Router		/host/container/{id}/{driver}/network [get]
+//	@Produce	json
 func (c *Controller) handleListNetwork(ctx *gin.Context) {
 	if id, err := uuid.Parse(ctx.Param("id")); err != nil {
 		response.Error(ctx, response.CodeParamsError)
 	} else {
-		if res, err := c.service.ListContainerNetwork(id); err != nil {
+		if res, err := c.service.ListContainerNetwork(id, ctx.Param("driver")); err != nil {
 			response.ErrorWithMsg(ctx, response.CodeParamsError, err.Error())
 		} else {
 			response.Success(ctx, res)
@@ -28,17 +29,18 @@ func (c *Controller) handleListNetwork(ctx *gin.Context) {
 	}
 }
 
-// @Summary	list container container
-// @Tags		container
-// @Param		id	path		string	true	"host id"
-// @Success	200	{object}	response.Response
-// @Router		/host/container/{id}/container [get]
-// @Produce	json
+//	@Summary	list container container
+//	@Tags		container
+//	@Param		id		path		string	true	"host id"
+//	@Param		driver	path		string	true	"container driver"
+//	@Success	200		{object}	response.Response
+//	@Router		/host/container/{id}/{driver}/container [get]
+//	@Produce	json
 func (c *Controller) handleListContainer(ctx *gin.Context) {
 	if id, err := uuid.Parse(ctx.Param("id")); err != nil {
 		response.Error(ctx, response.CodeParamsError)
 	} else {
-		if res, err := c.service.ListContainer(id); err != nil {
+		if res, err := c.service.ListContainer(id, ctx.Param("driver")); err != nil {
 			response.ErrorWithMsg(ctx, response.CodeParamsError, err.Error())
 		} else {
 			response.Success(ctx, res)
@@ -46,17 +48,18 @@ func (c *Controller) handleListContainer(ctx *gin.Context) {
 	}
 }
 
-// @Summary	list container image
-// @Tags		container
-// @Param		id	path		string	true	"host id"
-// @Success	200	{object}	response.Response
-// @Router		/host/container/{id}/image [get]
-// @Produce	json
+//	@Summary	list container image
+//	@Tags		container
+//	@Param		id		path		string	true	"host id"
+//	@Param		driver	path		string	true	"container driver"
+//	@Success	200		{object}	response.Response
+//	@Router		/host/container/{id}/{driver}/image [get]
+//	@Produce	json
 func (c *Controller) handleListImage(ctx *gin.Context) {
 	if id, err := uuid.Parse(ctx.Param("id")); err != nil {
 		response.Error(ctx, response.CodeParamsError)
 	} else {
-		if res, err := c.service.ListContainerImage(id); err != nil {
+		if res, err := c.service.ListContainerImage(id, ctx.Param("driver")); err != nil {
 			response.ErrorWithMsg(ctx, response.CodeParamsError, err.Error())
 		} else {
 			response.Success(ctx, res)
@@ -64,13 +67,14 @@ func (c *Controller) handleListImage(ctx *gin.Context) {
 	}
 }
 
-// @Summary	get container log
-// @Tags		container
-// @Param		id	path		string	true	"host id"
-// @Param		cid	path		string	true	"container id"
-// @Success	200	{object}	response.Response
-// @Router		/host/container/{id}/container/{cid}/log [get]
-// @Produce	json
+//	@Summary	get container log
+//	@Tags		container
+//	@Param		id		path		string	true	"host id"
+//	@Param		cid		path		string	true	"container id"
+//	@Param		driver	path		string	true	"container driver"
+//	@Success	200		{object}	response.Response
+//	@Router		/host/container/{id}/container/{cid}/log [get]
+//	@Produce	json
 func (c *Controller) handleGetContainerLogs(ctx *gin.Context) {
 	ctx.Writer.Header().Set("Content-Type", "text/event-stream")
 	ctx.Writer.Header().Set("Cache-Control", "no-cache")
@@ -83,7 +87,7 @@ func (c *Controller) handleGetContainerLogs(ctx *gin.Context) {
 		if len(cid) == 0 {
 			response.Error(ctx, response.CodeParamsError)
 		} else {
-			if logs, err := c.service.GetContainerLogs(ctx, id, cid); err != nil {
+			if logs, err := c.service.GetContainerLogs(ctx, id, cid, ctx.Param("driver")); err != nil {
 				response.ErrorWithMsg(ctx, response.CodeParamsError, err.Error())
 			} else {
 				defer logs.Close()

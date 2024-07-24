@@ -23,6 +23,11 @@ type Client struct {
 }
 
 func NewClientWithSSH(sshInfo *sshutil.HostInfo) (*Client, error) {
+	return NewClientWithSSHAndAPIVersion(sshInfo, defaultDockerVersion)
+}
+
+
+func NewClientWithSSHAndAPIVersion(sshInfo *sshutil.HostInfo, apiVersion string) (*Client, error) {
 	helper, err := GetSSHConnectionHelper(sshInfo)
 	if err != nil {
 		return nil, err
@@ -36,7 +41,7 @@ func NewClientWithSSH(sshInfo *sshutil.HostInfo) (*Client, error) {
 		}),
 		client.WithHost(helper.Host),
 		client.WithDialContext(helper.Dialer),
-		client.WithVersion(defaultDockerVersion),
+		client.WithVersion(apiVersion),
 	)
 	if err != nil {
 		return nil, err

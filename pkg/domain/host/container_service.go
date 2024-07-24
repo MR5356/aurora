@@ -2,7 +2,7 @@ package host
 
 import (
 	"context"
-	"errors"
+	"fmt"
 	"io"
 
 	"github.com/MR5356/aurora/pkg/util/container"
@@ -12,42 +12,48 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
-func (s *Service) ListContainerNetwork(id uuid.UUID) ([]*container.Network, error) {
-	if client, err := s.getContainerClient(id); err != nil {
+const (
+	driverDontainerd = "containerd"
+	driverDocker     = "docker"
+)
+
+func (s *Service) ListContainerNetwork(id uuid.UUID, driver string) ([]*container.Network, error) {
+	if client, err := s.getContainerClient(id, driver); err != nil {
 		return nil, err
 	} else {
 		return client.ListNetwork(context.TODO())
 	}
 }
 
-func (s *Service) ListContainerImage(id uuid.UUID) ([]*container.Image, error) {
-	if client, err := s.getContainerClient(id); err != nil {
+func (s *Service) ListContainerImage(id uuid.UUID, driver string) ([]*container.Image, error) {
+	if client, err := s.getContainerClient(id, driver); err != nil {
 		return nil, err
 	} else {
 		return client.ListImage(context.TODO(), true)
 	}
 }
 
-func (s *Service) ListContainer(id uuid.UUID) ([]*container.Container, error) {
-	if client, err := s.getContainerClient(id); err != nil {
+func (s *Service) ListContainer(id uuid.UUID, driver string) ([]*container.Container, error) {
+	if client, err := s.getContainerClient(id, driver); err != nil {
 		return nil, err
 	} else {
 		return client.ListContainer(context.TODO(), true)
 	}
 }
 
-func (s *Service) GetContainerLogs(ctx context.Context, id uuid.UUID, containerId string) (io.ReadCloser, error) {
-	if client, err := s.getContainerClient(id); err != nil {
+func (s *Service) GetContainerLogs(ctx context.Context, id uuid.UUID, containerId string, driver string) (io.ReadCloser, error) {
+	if client, err := s.getContainerClient(id, driver); err != nil {
 		return nil, err
 	} else {
 		return client.Logs(ctx, containerId)
 	}
 }
 
-func (s *Service) getContainerClient(id uuid.UUID) (container.Client, error) {
+func (s *Service) getContainerClient(id uuid.UUID, driver string) (container.Client, error) {
 	// 优先在缓存中取客户端
-	logrus.Debugf("get container client for %s", id.String())
-	if client, ok := s.containerClientCache.Get(id.String()); ok {
+	key := fmt.Sprintf("%s-%s", id.String(), driver)
+	logrus.Debugf("get container client for %s", key)
+	if client, ok := s.containerClientCache.Get(key); ok {
 		return client, nil
 	}
 
@@ -57,15 +63,21 @@ func (s *Service) getContainerClient(id uuid.UUID) (container.Client, error) {
 	} else {
 		var client container.Client
 		var err error
-		logrus.Debugf("try to use docker driver")
-		if client, err = docker.NewClientWithSSH(&host.HostInfo); err != nil {
-			logrus.Debugf("docker driver error, try to use containerd")
-			if client, err = containerd.NewClientWithSSH(&host.HostInfo); err != nil {
-				logrus.Debugf("container driver error")
-				return nil, errors.New("failed to obtain the container. Please check whether Docker or containerd is installed")
-			}
+
+		switch driver {
+		case driverDontainerd:
+			client, err = containerd.NewClientWithSSH(&host.HostInfo)
+		case driverDocker:
+			client, err = docker.NewClientWithSSHAndAPIVersion(&host.HostInfo, host.MetaInfo.Docker)
+		default:
+			return nil, fmt.Errorf("%s not support", driver)
 		}
-		s.containerClientCache.Set(id.String(), client)
+
+		if err != nil {
+			return nil, fmt.Errorf("failed to obtain the container. error: %w", err)
+		}
+
+		s.containerClientCache.Set(key, client)
 		return client, err
 	}
 }
