@@ -99,14 +99,14 @@ func New(cfg *config.Config) (server *Server, err error) {
 
 	// service
 	services := []Service{
-		schedule.GetService(),
+		script.GetService(),
 		user.GetService(),
 		system.GetService(),
 		notify.GetService(),
 		pipeline.GetService(),
 		host.GetService(),
 		health.GetService(),
-		script.GetService(),
+		schedule.GetService(),
 	}
 
 	for _, svc := range services {

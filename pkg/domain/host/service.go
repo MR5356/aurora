@@ -4,15 +4,19 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"github.com/MR5356/aurora/pkg/util/sshutil"
+	"sync"
+	"time"
+
 	"github.com/MR5356/aurora/pkg/middleware/database"
+	"github.com/MR5356/aurora/pkg/util/cacheutil"
+	"github.com/MR5356/aurora/pkg/util/container"
 	"github.com/MR5356/aurora/pkg/util/structutil"
 	"github.com/MR5356/aurora/pkg/util/validate"
 	"github.com/MR5356/jietan/pkg/executor"
 	"github.com/MR5356/jietan/pkg/executor/api"
 	"github.com/google/uuid"
 	"golang.org/x/crypto/ssh"
-	"sync"
-	"time"
 )
 
 var (
@@ -21,15 +25,22 @@ var (
 )
 
 type Service struct {
-	hostDb  *database.BaseMapper[*Host]
-	groupDb *database.BaseMapper[*Group]
+	hostDb               *database.BaseMapper[*Host]
+	groupDb              *database.BaseMapper[*Group]
+	containerClientCache *cacheutil.CountdownCache[container.Client]
+	hostClientCache      *cacheutil.CountdownCache[*sshutil.Client]
+
+	statsCache *StatsCache
 }
 
 func GetService() *Service {
 	onceService.Do(func() {
 		service = &Service{
-			hostDb:  database.NewMapper(database.GetDB(), &Host{}),
-			groupDb: database.NewMapper(database.GetDB(), &Group{}),
+			hostDb:               database.NewMapper(database.GetDB(), &Host{}),
+			groupDb:              database.NewMapper(database.GetDB(), &Group{}),
+			containerClientCache: cacheutil.NewCountdownCache[container.Client](time.Minute * 30),
+			hostClientCache:      cacheutil.NewCountdownCache[*sshutil.Client](time.Minute * 30),
+			statsCache:           &StatsCache{},
 		}
 	})
 	return service
@@ -152,7 +163,42 @@ func (s *Service) checkHost(machine *Host) error {
 		"hosts": []*api.HostInfo{
 			hostInfo,
 		},
-		"script": "#!/bin/bash\n\n# 系统信息\nos=$(cat /etc/os-release | grep ^ID= | cut -d '=' -f2)\nos=${os//\\\"/} # 去掉双引号\nkernel=$(uname -r)\nhostname=$(hostname)\narch=$(uname -m)\n\n# 硬件信息\ncpu_count=$(lscpu | grep \"^CPU:\\|^CPU(s)\" | cut -d ':' -f2 | awk '{$1=$1;print}')\nmem_size=$(free -h | grep Mem | awk '{print $2}')\n\n# 构建JSON\njson=\"{\\\"os\\\": \\\"$os\\\",\n        \\\"kernel\\\": \\\"$kernel\\\",\n        \\\"hostname\\\": \\\"$hostname\\\",\n        \\\"arch\\\": \\\"$arch\\\",\n        \\\"cpu\\\": \\\"$cpu_count\\\",\n        \\\"mem\\\": \\\"$mem_size\\\"}\"\n\n# 输出\necho $json",
+		"script": `#!/bin/bash
+
+# 系统信息
+os=$(cat /etc/os-release | grep ^ID= | cut -d '=' -f2)
+os=${os//\"/} # 去掉双引号
+kernel=$(uname -r)
+hostname=$(hostname)
+arch=$(uname -m)
+
+# 硬件信息
+cpu_count=$(lscpu | grep "^CPU(s):" | cut -d ':' -f2 | awk '{$1=$1;print}')
+mem_size=$(free -h | grep Mem | awk '{print $2}')
+
+# containerd 版本信息
+containerd_version=$(containerd --version 2>/dev/null || k3s crictl version 2>/dev/null | grep 'RuntimeVersion' | awk '{print $2}')
+
+# docker 版本信息
+docker_version=$(docker version --format '{{.Server.APIVersion}}' 2>/dev/null)
+
+# 构建JSON
+json=$(cat <<EOF
+{
+    "os": "$os",
+    "kernel": "$kernel",
+    "hostname": "$hostname",
+    "arch": "$arch",
+    "cpu": "$cpu_count",
+    "mem": "$mem_size",
+    "containerd": "$containerd_version",
+    "docker": "$docker_version"
+}
+EOF
+)
+
+# 输出
+echo $json`,
 		"params": "",
 	})
 	metaInfo := new(MetaInfo)
@@ -181,5 +227,6 @@ func (s *Service) Initialize() error {
 	if err := s.groupDb.DB.Where(&Group{ID: uuid.MustParse("b0ea5261-4185-44f3-b16b-ef7e6b681775")}).Attrs(&Group{Title: "default"}).FirstOrCreate(&Group{}).Error; err != nil {
 		return err
 	}
+
 	return nil
 }

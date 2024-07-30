@@ -201,6 +201,24 @@ func (c *Controller) handleDetailHost(ctx *gin.Context) {
 	}
 }
 
+// @Summary	get host stats
+// @Tags		host
+// @Param		id	path		string	true	"host id"
+// @Success	200	{object}	response.Response{data=Stats}
+// @Router		/host/{id}/stats [get]
+// @Produce	json
+func (c *Controller) handleGetHostStats(ctx *gin.Context) {
+	if id, err := uuid.Parse(ctx.Param("id")); err != nil {
+		response.Error(ctx, response.CodeParamsError)
+	} else {
+		if res, err := c.service.GetHostStats(id); err != nil {
+			response.ErrorWithMsg(ctx, response.CodeServerError, err.Error())
+		} else {
+			response.Success(ctx, res)
+		}
+	}
+}
+
 func (c *Controller) RegisterRoute(engine *gin.RouterGroup) {
 	host := engine.Group("host")
 	host.POST("/add", c.handleAddHost)
@@ -208,6 +226,7 @@ func (c *Controller) RegisterRoute(engine *gin.RouterGroup) {
 	host.PUT("/:id", c.handleUpdateHost)
 	host.GET("/list", c.handleListHost)
 	host.GET("/:id/detail", c.handleDetailHost)
+	host.GET("/:id/stats", c.handleGetHostStats)
 
 	group := host.Group("group")
 	group.GET("/list", c.handleListGroup)
@@ -217,4 +236,11 @@ func (c *Controller) RegisterRoute(engine *gin.RouterGroup) {
 
 	term := host.Group("terminal")
 	term.GET(":id", c.handleTerminal)
+
+	container := host.Group("container")
+	container.GET("/:id/:driver/network", c.handleListNetwork)
+	container.GET("/:id/:driver/image", c.handleListImage)
+	container.GET("/:id/:driver/container", c.handleListContainer)
+	container.GET("/:id/:driver/container/:cid/log", c.handleGetContainerLogs)
+	container.GET("/:id/:driver/container/:cid/terminal", c.handleExecTerminal)
 }

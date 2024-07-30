@@ -1,11 +1,12 @@
 package ginmiddleware
 
 import (
+	"strings"
+
 	"github.com/MR5356/aurora/pkg/domain/user"
 	"github.com/MR5356/aurora/pkg/response"
 	"github.com/MR5356/aurora/pkg/util/ginutil"
 	"github.com/gin-gonic/gin"
-	"strings"
 )
 
 func skipLogin(path string) bool {

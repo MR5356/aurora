@@ -137,3 +137,5 @@ docs
 coverage.out
 pkg/server/static/*
 config-dev.yaml
+
+/tmp

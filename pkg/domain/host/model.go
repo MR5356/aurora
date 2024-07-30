@@ -3,11 +3,12 @@ package host
 import (
 	"database/sql/driver"
 	"encoding/json"
+	"time"
+
 	"github.com/MR5356/aurora/pkg/middleware/database"
 	"github.com/MR5356/aurora/pkg/util/sshutil"
 	"github.com/google/uuid"
 	"gorm.io/gorm"
-	"time"
 )
 
 type Host struct {
@@ -43,12 +44,14 @@ func (g *Group) BeforeCreate(tx *gorm.DB) error {
 }
 
 type MetaInfo struct {
-	OS       string `json:"os"`
-	Kernel   string `json:"kernel"`
-	Hostname string `json:"hostname"`
-	Arch     string `json:"arch"`
-	Cpu      string `json:"cpu"`
-	Mem      string `json:"mem"`
+	OS         string `json:"os"`
+	Kernel     string `json:"kernel"`
+	Hostname   string `json:"hostname"`
+	Arch       string `json:"arch"`
+	Cpu        string `json:"cpu"`
+	Mem        string `json:"mem"`
+	Containerd string `json:"containerd"`
+	Docker     string `json:"docker"`
 }
 
 func (m *Host) TableName() string {
