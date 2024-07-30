@@ -7,7 +7,6 @@ import (
 	"github.com/MR5356/aurora/pkg/response"
 	"github.com/MR5356/aurora/pkg/util/ginutil"
 	"github.com/gin-gonic/gin"
-	"github.com/sirupsen/logrus"
 )
 
 func skipLogin(path string) bool {
@@ -30,7 +29,6 @@ func skipLogin(path string) bool {
 
 func MustLogin() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-		logrus.Infof("aaaaa: %+v", ctx.Request.URL)
 		if !skipLogin(ctx.Request.URL.Path) {
 			u, err := user.GetJWTService().ParseToken(ginutil.GetToken(ctx))
 			if err != nil {

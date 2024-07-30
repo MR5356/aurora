@@ -1,6 +1,7 @@
 package cacheutil
 
 import (
+	"github.com/sirupsen/logrus"
 	"sync"
 	"time"
 )
@@ -35,6 +36,7 @@ func (c *CountdownCache[T]) Set(key string, value T) {
 		c.mutex.Lock()
 		defer c.mutex.Unlock()
 
+		logrus.Debugf("cache expired: %s", key)
 		delete(c.items, key)
 	})
 
@@ -51,6 +53,7 @@ func (c *CountdownCache[T]) Get(key string) (T, bool) {
 	if item, found := c.items[key]; found {
 		item.Expiration.Stop()
 		item.Expiration.Reset(c.ttl)
+		logrus.Debugf("cache hit: %s", key)
 		return item.Value, true
 	} else {
 		var res T
@@ -64,6 +67,7 @@ func (c *CountdownCache[T]) Delete(key string) {
 
 	if item, found := c.items[key]; found {
 		item.Expiration.Stop()
+		logrus.Debugf("cache deleted: %s", key)
 		delete(c.items, key)
 	}
 }

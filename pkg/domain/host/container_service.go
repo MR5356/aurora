@@ -14,7 +14,7 @@ import (
 )
 
 const (
-	driverDontainerd = "containerd"
+	driverContainerd = "containerd"
 	driverDocker     = "docker"
 )
 
@@ -75,7 +75,7 @@ func (s *Service) getContainerClient(id uuid.UUID, driver string) (container.Cli
 		var err error
 
 		switch driver {
-		case driverDontainerd:
+		case driverContainerd:
 			client, err = containerd.NewClientWithSSH(&host.HostInfo)
 		case driverDocker:
 			client, err = docker.NewClientWithSSHAndAPIVersion(&host.HostInfo, host.MetaInfo.Docker)

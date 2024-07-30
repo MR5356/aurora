@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"github.com/MR5356/aurora/pkg/util/sshutil"
 	"sync"
 	"time"
 
@@ -27,6 +28,9 @@ type Service struct {
 	hostDb               *database.BaseMapper[*Host]
 	groupDb              *database.BaseMapper[*Group]
 	containerClientCache *cacheutil.CountdownCache[container.Client]
+	hostClientCache      *cacheutil.CountdownCache[*sshutil.Client]
+
+	statsCache *StatsCache
 }
 
 func GetService() *Service {
@@ -35,6 +39,8 @@ func GetService() *Service {
 			hostDb:               database.NewMapper(database.GetDB(), &Host{}),
 			groupDb:              database.NewMapper(database.GetDB(), &Group{}),
 			containerClientCache: cacheutil.NewCountdownCache[container.Client](time.Minute * 30),
+			hostClientCache:      cacheutil.NewCountdownCache[*sshutil.Client](time.Minute * 30),
+			statsCache:           &StatsCache{},
 		}
 	})
 	return service
@@ -221,5 +227,6 @@ func (s *Service) Initialize() error {
 	if err := s.groupDb.DB.Where(&Group{ID: uuid.MustParse("b0ea5261-4185-44f3-b16b-ef7e6b681775")}).Attrs(&Group{Title: "default"}).FirstOrCreate(&Group{}).Error; err != nil {
 		return err
 	}
+
 	return nil
 }
