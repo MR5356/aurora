@@ -296,16 +296,18 @@ echo "$json"
 `
 	getProcessInfo = `#!/bin/bash
 
-# 使用 ps 命令获取进程信息
-process_info=$(ps -eo pcpu,pmem,comm --sort=-pcpu | awk 'NR>1 {print $1, $2, $3}')
+# 使用 ps 命令获取进程信息，包括完整命令行
+process_info=$(ps -eo pcpu,pmem,args --sort=-pcpu -ww | awk 'NR>1 {print $1, $2, $3}')
 
 # 初始化 JSON 数组
 json="["
 
 # 遍历进程信息
 while read -r cpu mem command; do
+  # 将命令中的引号和特殊字符转义
+  escaped_command=$(echo "$command" | sed 's/"/\\"/g')
   # 格式化为 JSON 字符串
-  json="$json{\"cpu\": $cpu, \"mem\": $mem, \"command\": \"$command\"},"
+  json="$json{\"cpu\": $cpu, \"mem\": $mem, \"command\": \"$escaped_command\"},"
 done <<< "$process_info"
 
 # 去掉最后一个逗号并关闭 JSON 数组
@@ -392,6 +394,7 @@ func (s *Service) GetHostStats(id uuid.UUID) (*Stats, error) {
 		}
 		process := new(ProcessInfo)
 		if err := json.Unmarshal([]byte(info), process); err != nil {
+			logrus.Errorf("unmarshal process info error: %v, info: %s", err, info)
 			return
 		}
 		s.statsCache.Set(id.String(), process)
