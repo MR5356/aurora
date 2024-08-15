@@ -27,7 +27,7 @@ jobs:
         uses: actions/cache@v3
         with:
           path: /tmp/.buildx-cache
-          key: "${{ runner.os }}-buildx-${{ github.sha }}"
+          key: "${{ runner.os }}-buildx-${{ hashFiles('**/Dockerfile') }}"
           restore-keys: |
             ${{ runner.os }}-buildx-
 
@@ -45,12 +45,7 @@ jobs:
 
       - name: Read CHANGELOG from File
         id: read_changelog
-        run: |
-          CHANGELOG_CONTENT=$(cat CHANGELOG/`cat VERSION`.md)
-          echo "CHANGELOG=$CHANGELOG_CONTENT" >> $GITHUB_ENV
-
-      - name: Write CHANGELOG to file
-        run: echo "${{ env.CHANGELOG }}" > release/CHANGELOG.txt
+        run: echo "CHANGELOG=CHANGELOG/`cat VERSION`.md" >> $GITHUB_ENV
 
       - name: Release
         uses: softprops/action-gh-release@v2
@@ -60,5 +55,4 @@ jobs:
           prerelease: false
           tag_name: ${{ env.VERSION }}
           token: ${{ secrets.GITHUB_TOKEN }}
-          body_path: release/CHANGELOG.txt
-#          body: ${{ env.CHANGELOG }}
+          body_path: ${{ env.CHANGELOG }}
