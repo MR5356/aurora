@@ -23,6 +23,14 @@ jobs:
         with:
           platforms: linux/amd64
 
+      - name: Cache Docker layers
+        uses: actions/cache@v3
+        with:
+          path: /tmp/.buildx-cache
+          key: "${{ runner.os }}-buildx-${{ github.sha }}"
+          restore-keys: |
+            ${{ runner.os }}-buildx-
+
       - name: Build binaries
         run: make docker-release
 
