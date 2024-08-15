@@ -83,11 +83,11 @@ func (s *Service) GetStatistic() ([]*Statistic, error) {
 	}
 
 	// record
-	var rc int64
-	err = s.recordDB.DB.Model(&Record{}).Where("is_api = ?", true).Count(&rc).Error
-	if err != nil {
-		return res, err
-	}
+	//var rc int64
+	//err = s.recordDB.DB.Model(&Record{}).Where("is_api = ?", true).Count(&rc).Error
+	//if err != nil {
+	//	return res, err
+	//}
 
 	// host
 	rh, err := s.hostDB.Count(&host.Host{})
@@ -135,11 +135,11 @@ func (s *Service) GetStatistic() ([]*Statistic, error) {
 		Icon:  "schedule",
 	})
 
-	res = append(res, &Statistic{
-		Name:  "statistic.record",
-		Count: fmt.Sprintf("%d", rc),
-		Icon:  "record",
-	})
+	//res = append(res, &Statistic{
+	//	Name:  "statistic.record",
+	//	Count: fmt.Sprintf("%d", rc),
+	//	Icon:  "record",
+	//})
 	return res, nil
 }
 
