@@ -34,6 +34,8 @@ github.com/MR5356/go-workflow v0.0.0-20240524062002-9881d083d471 h1:VIs26FIUxOe/
 github.com/MR5356/go-workflow v0.0.0-20240524062002-9881d083d471/go.mod h1:+YL1PC48MWTk/z+pdBh30GfcrA9af296qOMkXswRA9k=
 github.com/MR5356/health v0.0.0-20240630104304-f06b4a52093e h1:6zVd5FMYAo9xa32zXZ44NBxzI/q1LztCjMuVs/7pAT8=
 github.com/MR5356/health v0.0.0-20240630104304-f06b4a52093e/go.mod h1:u1MAOvJjlAV0DgzgbxNamhSW5img4l7h+3om8B8XFo8=
+github.com/MR5356/health v0.0.0-20240823033908-fb63ead7d3f6 h1:n/iDAnXYyyC2tpWnXz4JoPI07s1s8qOs1du3JTKzXYQ=
+github.com/MR5356/health v0.0.0-20240823033908-fb63ead7d3f6/go.mod h1:u1MAOvJjlAV0DgzgbxNamhSW5img4l7h+3om8B8XFo8=
 github.com/MR5356/jietan v0.0.0-20240714044041-3c75753fbafb h1:5/HaDiWBYQBi6SDHu1pnmNbP0BLGKYZHSX+Ht9jr0/M=
 github.com/MR5356/jietan v0.0.0-20240714044041-3c75753fbafb/go.mod h1:g/xGuksBiy5A40nc5lQWOwxAx5LvISFlYf1t5Y7g2BM=
 github.com/Microsoft/go-winio v0.6.2 h1:F2VQgta7ecxGYO8k3ZZz3RS8fVIXVxONVUPlNERoyfY=
