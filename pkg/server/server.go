@@ -161,3 +161,7 @@ func (s *Server) Run() error {
 	logrus.Infof("server receive signal: %s", ch.String())
 	return server.Shutdown(ctx)
 }
+
+func (s *Server) Shutdown() {
+
+}
