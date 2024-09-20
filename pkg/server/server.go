@@ -10,7 +10,6 @@ import (
 	"github.com/MR5356/aurora/pkg/domain/health"
 	"github.com/MR5356/aurora/pkg/domain/host"
 	"github.com/MR5356/aurora/pkg/domain/notify"
-	"github.com/MR5356/aurora/pkg/domain/pipeline"
 	"github.com/MR5356/aurora/pkg/domain/plugin"
 	"github.com/MR5356/aurora/pkg/domain/schedule"
 	"github.com/MR5356/aurora/pkg/domain/script"
@@ -103,7 +102,7 @@ func New(cfg *config.Config) (server *Server, err error) {
 		user.GetService(),
 		system.GetService(),
 		notify.GetService(),
-		pipeline.GetService(),
+		//pipeline.GetService(),
 		host.GetService(),
 		health.GetService(),
 		schedule.GetService(),
@@ -121,7 +120,7 @@ func New(cfg *config.Config) (server *Server, err error) {
 		user.NewController(),
 		system.NewController(),
 		notify.NewController(),
-		pipeline.NewController(),
+		//pipeline.NewController(),
 		host.NewController(),
 		health.NewController(),
 		plugin.NewController(),
