@@ -1,10 +1,10 @@
 package main
 
 import (
-	"github.com/MR5356/aurora/pkg/config"
-	"github.com/MR5356/aurora/pkg/server"
+	"github.com/MR5356/aurora/internal/config"
+	"github.com/MR5356/aurora/internal/server"
+	"github.com/MR5356/aurora/internal/version"
 	"github.com/MR5356/aurora/pkg/util/fileutil"
-	"github.com/MR5356/aurora/pkg/version"
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 )

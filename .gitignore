@@ -135,7 +135,7 @@ docs
 
 # test coverage
 coverage.out
-pkg/server/static/*
+internal/server/static/*
 config-dev.yaml
 
 /tmp
