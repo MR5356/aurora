@@ -1,7 +1,7 @@
 package pipeline
 
 import (
-	"github.com/MR5356/aurora/pkg/response"
+	"github.com/MR5356/aurora/internal/response"
 	"github.com/gin-gonic/gin"
 	"github.com/sirupsen/logrus"
 )
