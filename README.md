@@ -1,10 +1,16 @@
 # Aurora
+[![GitHub License](https://img.shields.io/github/license/mr5356/aurora)](https://github.com/mr5356/aurora?tab=Apache-2.0-1-ov-file)
+
 [![go-test](https://github.com/MR5356/aurora/workflows/Go%20Test/badge.svg?query=branch%3Amaster)](https://github.com/MR5356/aurora/actions?query=branch%3Amaster)
+[![docker-image](https://github.com/MR5356/aurora/workflows/Docker%20Build/badge.svg?query=branch%3Amaster)](https://hub.docker.com/r/toodo/aurora/tags)
 [![go-report](https://goreportcard.com/badge/github.com/MR5356/aurora)](https://goreportcard.com/report/github.com/MR5356/aurora)
-[![docker-image](https://github.com/MR5356/aurora/workflows/Docker/badge.svg?query=branch%3Amaster)](https://hub.docker.com/r/toodo/aurora/tags)
+
+[![Docker Pulls](https://img.shields.io/docker/pulls/toodo/aurora)](https://hub.docker.com/r/toodo/aurora)
+[![GitHub Downloads (all assets, all releases)](https://img.shields.io/github/downloads/mr5356/aurora/total)](https://github.com/MR5356/aurora/releases)
+[![GitHub Release Date](https://img.shields.io/github/release-date/mr5356/aurora)](https://github.com/MR5356/aurora/releases)
 [![release](https://img.shields.io/github/v/release/MR5356/aurora)](https://github.com/MR5356/aurora/releases)
 
-<img src="./logo/logo.svg" width="100">
+<img src="./logo/logo.svg" width="100" alt="logo">
 
 ----
 
@@ -45,3 +51,6 @@ make docker
 ## Support
 
 If you have questions, reach out to us one way or another.
+
+## Acknowledgements
+Grateful acknowledgement to [JetBrains](https://www.jetbrains.com) for supporting this project through their Open Source License Program and providing exceptional development tools.
