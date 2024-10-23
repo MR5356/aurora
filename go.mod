@@ -1,6 +1,6 @@
 module github.com/MR5356/aurora
 
-go 1.22
+go 1.23.0
 
 require (
 	github.com/MR5356/go-workflow v0.0.0-20240524062002-9881d083d471
@@ -49,7 +49,6 @@ require (
 	filippo.io/edwards25519 v1.1.0 // indirect
 	github.com/AdaLogics/go-fuzz-headers v0.0.0-20230811130428-ced1acdcaa24 // indirect
 	github.com/AdamKorcz/go-118-fuzz-build v0.0.0-20230306123547-8075edf89bb0 // indirect
-	github.com/Azure/go-ansiterm v0.0.0-20210617225240-d185dfc1b5a1 // indirect
 	github.com/KyleBanks/depth v1.2.1 // indirect
 	github.com/MR5356/go-ping v0.0.0-20240628070247-a45544c66640 // indirect
 	github.com/Microsoft/go-winio v0.6.2 // indirect
