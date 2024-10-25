@@ -9,7 +9,7 @@ RUN yarn config set registry 'https://registry.npmmirror.com' && \
 COPY frontend .
 RUN yarn build-only
 
-FROM golang:1.22.2-alpine3.19 AS builder
+FROM golang:1.23.0-alpine3.19 AS builder
 WORKDIR /build
 
 RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.aliyun.com/g' /etc/apk/repositories && \
