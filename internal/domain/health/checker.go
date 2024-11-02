@@ -45,8 +45,8 @@ func (s *Service) initChecker() error {
 	if healths, err := s.healthDb.List(&Health{Enabled: true}); err != nil {
 		return err
 	} else {
-		for _, health := range healths {
-			if err := s.startChecker(health); err != nil {
+		for _, h := range healths {
+			if err := s.startChecker(h); err != nil {
 				logrus.Errorf("start checker failed, error: %v", err)
 			}
 		}
