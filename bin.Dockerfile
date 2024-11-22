@@ -22,7 +22,7 @@ COPY Makefile go.mod go.sum ./
 RUN make init && go mod download
 
 COPY . .
-COPY --from=node-builder /build/dist ./pkg/server/static
+COPY --from=node-builder /build/dist ./internal/server/static
 RUN make deps && chmod +x hack/release.sh && ./hack/release.sh aurora _output
 
 FROM scratch

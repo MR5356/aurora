@@ -20,7 +20,7 @@ COPY Makefile go.mod go.sum ./
 RUN make init && go mod download
 
 COPY . .
-COPY --from=node-builder /build/dist ./pkg/server/static
+COPY --from=node-builder /build/dist ./internal/server/static
 RUN make build
 
 FROM alpine:3.19
