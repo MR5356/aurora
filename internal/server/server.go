@@ -154,10 +154,11 @@ func (s *Server) Run() error {
 	sig := make(chan os.Signal, 1)
 	signal.Notify(sig, syscall.SIGINT, syscall.SIGTERM)
 
+	ch := <-sig
+	
 	ctx, cancel := context.WithTimeout(context.Background(), time.Duration(config.Current().Server.GracePeriod)*time.Second)
 	defer cancel()
 
-	ch := <-sig
 	logrus.Infof("server receive signal: %s", ch.String())
 	return server.Shutdown(ctx)
 }
