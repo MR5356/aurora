@@ -84,6 +84,7 @@ func New(cfg *config.Config) (server *Server, err error) {
 	)
 
 	// metrics
+	// TODO: Add some custom metrics
 	engine.GET("/api/v1/metrics", func(handler http.Handler) gin.HandlerFunc {
 		return func(context *gin.Context) {
 			handler.ServeHTTP(context.Writer, context.Request)
@@ -164,5 +165,5 @@ func (s *Server) Run() error {
 }
 
 func (s *Server) Shutdown() {
-
+    // TODO: Add shutdown here
 }
