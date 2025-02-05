@@ -94,7 +94,7 @@ func New(cfg *config.Config) (server *Server, err error) {
 	// swagger
 	docs.SwaggerInfo.Title = "Aurora API"
 	docs.SwaggerInfo.Description = "Aurora API"
-	docs.SwaggerInfo.Version = "1.0"
+	docs.SwaggerInfo.Version = "v1.0"
 	docs.SwaggerInfo.BasePath = cfg.Server.Prefix
 	api.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
