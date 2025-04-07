@@ -68,8 +68,8 @@ func New(cfg *config.Config) (server *Server, err error) {
 
 	// init gin infrastructure
 	engine.Use(
-		ginmiddleware2.Record(),
-		ginmiddleware2.Static("/", ginmiddleware2.NewStaticFileSystem(fs, "static")),
+		ginmiddleware2.Record(),  // 访问记录
+		ginmiddleware2.Static("/", ginmiddleware2.NewStaticFileSystem(fs, "static")),  // 静态文件代理
 	)
 
 	// 404
@@ -78,18 +78,19 @@ func New(cfg *config.Config) (server *Server, err error) {
 	})
 
 	api := engine.Group(cfg.Server.Prefix)
+	api.GET("/metrics", gin.WrapH(promhttp.Handler()))
 	api.Use(
-		gzip.Gzip(gzip.DefaultCompression),
-		ginmiddleware2.MustLogin(),
+		gzip.Gzip(gzip.DefaultCompression),  // api返回gzip压缩
+		ginmiddleware2.MustLogin(),  // 必须登陆
 	)
 
 	// metrics
 	// TODO: Add some custom metrics
-	engine.GET("/api/v1/metrics", func(handler http.Handler) gin.HandlerFunc {
-		return func(context *gin.Context) {
-			handler.ServeHTTP(context.Writer, context.Request)
-		}
-	}(promhttp.Handler()))
+	// engine.GET("/api/v1/metrics", func(handler http.Handler) gin.HandlerFunc {
+	// 	return func(context *gin.Context) {
+	// 		handler.ServeHTTP(context.Writer, context.Request)
+	// 	}
+	// }(promhttp.Handler()))
 
 	// swagger
 	docs.SwaggerInfo.Title = "Aurora API"
