@@ -1,3 +1,7 @@
+/**
+TODO 需要改造为分布式，不应该将整个workflow跑在单副本
+*/
+
 package pipeline
 
 import (
