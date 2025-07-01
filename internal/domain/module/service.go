@@ -93,10 +93,12 @@ func (s *Service) UpdateGithubModule(ctx context.Context, action string, install
 		}
 
 		for _, repo := range all {
-			logrus.Infof("repo: %+v", repo)
+			logrus.Debugf("repo: %+v", repo)
 			if err = s.moduleDB.Insert(&Module{
 				Name:           repo.GetName(),
 				SCMType:        "GitHub",
+				Owner:          repo.GetOwner().GetLogin(),
+				OwnerID:        repo.GetOwner().GetID(),
 				Description:    repo.GetDescription(),
 				Language:       repo.GetLanguage(),
 				Private:        repo.GetPrivate(),

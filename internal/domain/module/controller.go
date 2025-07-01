@@ -7,6 +7,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/google/go-github/v61/github"
 	"github.com/sirupsen/logrus"
+	"net/http"
 	"strconv"
 )
 
@@ -84,7 +85,7 @@ func (c *Controller) handleGithubAppCallback(ctx *gin.Context) {
 		return
 	} else {
 		logrus.Infof("RegisterInstallationID success, installationID: %d, user: %v", installationID, userID)
-		response.Success(ctx, nil)
+		ctx.Redirect(http.StatusFound, "/repository")
 	}
 }
 
