@@ -33,9 +33,6 @@ test/*
 *.vscode/
 .idea/
 
-# Docker相关
-Dockerfile
-.dockerignore
 
 # 其他
 README.md

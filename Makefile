@@ -35,10 +35,8 @@ version:  ## Print the version
 
 .PHONY: doc
 doc:  ## Generate documentation
-#	swag init -d cmd/aurora -g aurora.go
-#	swag fmt -d cmd/aurora -g aurora.go
-	swag init
-	swag fmt
+	swag init -d cmd/aurora -g aurora.go
+	swag fmt -d cmd/aurora -g aurora.go
 
 .PHONY: deps
 deps: doc  ## Install dependencies
