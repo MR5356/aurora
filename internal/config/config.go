@@ -8,6 +8,9 @@ import (
 const (
 	DefaultRetryCount = 3
 	DefaultRetryDelay = time.Second * 0
+
+	ContextUserKey   = "user"
+	ContextUserIDKey = "userID"
 )
 
 var config *Config
@@ -18,6 +21,7 @@ type Config struct {
 	JWT         JWT                    `json:"jwt" yaml:"jwt"`
 	OAuthConfig map[string]OAuthConfig `json:"oauth" yaml:"oauth"`
 	Email       Email                  `json:"email" yaml:"email"`
+	GithubApp   GithubApp              `json:"githubApp" yaml:"githubApp"`
 }
 
 func Current(cfgs ...Cfg) *Config {
@@ -77,6 +81,11 @@ type Database struct {
 	MaxOpenConn int           `json:"maxOpenConn" yaml:"maxOpenConn" default:"40"`
 	ConnMaxLift time.Duration `json:"connMaxLift" yaml:"connMaxLift" default:"0s"`
 	ConnMaxIdle time.Duration `json:"connMaxIdle" yaml:"connMaxIdle" default:"0s"`
+}
+
+type GithubApp struct {
+	AppID      int64  `json:"appId" yaml:"appId" default:"1485539"`
+	PrivateKey string `json:"privateKey" yaml:"privateKey" default:"./github_app_private_key.pem"`
 }
 
 type Cfg func(c *Config)

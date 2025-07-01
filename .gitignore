@@ -139,3 +139,5 @@ internal/server/static/*
 config-dev.yaml
 
 /tmp
+
+github_app_private_key.pem

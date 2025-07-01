@@ -9,6 +9,7 @@ import (
 	"github.com/MR5356/aurora/internal/config"
 	"github.com/MR5356/aurora/internal/domain/health"
 	"github.com/MR5356/aurora/internal/domain/host"
+	"github.com/MR5356/aurora/internal/domain/module"
 	"github.com/MR5356/aurora/internal/domain/notify"
 	"github.com/MR5356/aurora/internal/domain/pipeline"
 	"github.com/MR5356/aurora/internal/domain/plugin"
@@ -108,6 +109,7 @@ func New(cfg *config.Config) (server *Server, err error) {
 		host.GetService(),
 		health.GetService(),
 		schedule.GetService(),
+		module.GetService(),
 	}
 
 	for _, svc := range services {
@@ -127,6 +129,7 @@ func New(cfg *config.Config) (server *Server, err error) {
 		health.NewController(),
 		plugin.NewController(),
 		script.NewController(),
+		module.NewController(),
 	}
 
 	for _, ctl := range controllers {
@@ -156,7 +159,7 @@ func (s *Server) Run() error {
 	signal.Notify(sig, syscall.SIGINT, syscall.SIGTERM)
 
 	ch := <-sig
-	
+
 	ctx, cancel := context.WithTimeout(context.Background(), time.Duration(config.Current().Server.GracePeriod)*time.Second)
 	defer cancel()
 
@@ -165,5 +168,5 @@ func (s *Server) Run() error {
 }
 
 func (s *Server) Shutdown() {
-    // TODO: Add shutdown here
+	// TODO: Add shutdown here
 }
