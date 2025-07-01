@@ -1,6 +1,7 @@
 package ginmiddleware
 
 import (
+	"github.com/MR5356/aurora/internal/config"
 	"strings"
 
 	"github.com/MR5356/aurora/internal/domain/user"
@@ -17,6 +18,7 @@ func skipLogin(path string) bool {
 		"/api/v1/user/callback",
 		"/api/v1/user/oauth",
 		"/api/v1/swagger",
+		"/api/v1/module/github/app/install",
 	}
 
 	for _, prefix := range prefixes {
@@ -41,7 +43,8 @@ func MustLogin() gin.HandlerFunc {
 				ctx.Abort()
 				return
 			}
-			ctx.Set("user", u)
+			ctx.Set(config.ContextUserKey, u)
+			ctx.Set(config.ContextUserIDKey, u.ID)
 		}
 		ctx.Next()
 	}

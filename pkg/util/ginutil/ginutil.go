@@ -18,9 +18,9 @@ func GetPageParams(ctx *gin.Context) (page int, size int) {
 		size = 10
 	}
 
-	if size > 50 {
-		size = 50
-	}
+	//if size > 50 {
+	//	size = 50
+	//}
 	return
 }
 
