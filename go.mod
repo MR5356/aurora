@@ -24,6 +24,7 @@ require (
 	github.com/go-playground/validator/v10 v10.20.0
 	github.com/golang-jwt/jwt/v5 v5.2.1
 	github.com/google/go-github/v61 v61.0.0
+	github.com/google/go-github/v72 v72.0.0
 	github.com/google/uuid v1.6.0
 	github.com/gorilla/websocket v1.5.3
 	github.com/mcuadros/go-defaults v1.2.0
@@ -107,7 +108,6 @@ require (
 	github.com/golang/protobuf v1.5.4 // indirect
 	github.com/google/gnostic v0.5.7-v3refs // indirect
 	github.com/google/go-cmp v0.7.0 // indirect
-	github.com/google/go-github/v72 v72.0.0 // indirect
 	github.com/google/go-querystring v1.1.0 // indirect
 	github.com/google/gofuzz v1.2.0 // indirect
 	github.com/hashicorp/go-cleanhttp v0.5.2 // indirect
